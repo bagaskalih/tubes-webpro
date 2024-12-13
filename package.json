@@ -14,10 +14,12 @@
     "@chakra-ui/react": "^2.10.4",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "flat-color-icons": "^1.1.0",
     "framer-motion": "^11.14.4",
     "next": "15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-icons": "^5.4.0",
     "tailwind-variants": "^0.3.0"
   },
   "devDependencies": {

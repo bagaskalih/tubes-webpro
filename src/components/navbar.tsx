@@ -22,9 +22,11 @@ import {
   ChevronDownIcon,
   ChevronRightIcon,
 } from "@chakra-ui/icons";
+import { useSession, signOut } from "next-auth/react";
 
 export default function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
+  const { data: session } = useSession();
 
   return (
     <Box>
@@ -73,29 +75,46 @@ export default function WithSubnavigation() {
           direction={"row"}
           spacing={6}
         >
-          <Button
-            as={"a"}
-            fontSize={"sm"}
-            fontWeight={400}
-            variant={"link"}
-            href={"/signin"}
-          >
-            Masuk
-          </Button>
-          <Button
-            as={"a"}
-            display={{ base: "none", md: "inline-flex" }}
-            fontSize={"sm"}
-            fontWeight={600}
-            color={"white"}
-            bg={"pink.400"}
-            href={"/signup"}
-            _hover={{
-              bg: "pink.300",
-            }}
-          >
-            Daftar
-          </Button>
+          {session?.user ? (
+            <Button
+              fontSize={"sm"}
+              fontWeight={400}
+              onClick={() => signOut()}
+              bg={"red.500"}
+              color={"white"}
+              _hover={{
+                bg: "red.400",
+              }}
+            >
+              Keluar
+            </Button>
+          ) : (
+            <>
+              <Button
+                as={"a"}
+                fontSize={"sm"}
+                fontWeight={400}
+                variant={"link"}
+                href={"/signin"}
+              >
+                Masuk
+              </Button>
+              <Button
+                as={"a"}
+                display={{ base: "none", md: "inline-flex" }}
+                fontSize={"sm"}
+                fontWeight={600}
+                color={"white"}
+                bg={"pink.400"}
+                href={"/signup"}
+                _hover={{
+                  bg: "pink.300",
+                }}
+              >
+                Daftar
+              </Button>
+            </>
+          )}
         </Stack>
       </Flex>
 
@@ -271,7 +290,7 @@ interface NavItem {
 const NAV_ITEMS: Array<NavItem> = [
   {
     label: "Beranda",
-    href: "#",
+    href: "/",
   },
   {
     label: "Layanan",

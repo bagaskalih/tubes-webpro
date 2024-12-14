@@ -17,7 +17,7 @@ export default function CardCarousel() {
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === cards.length - 1 ? 0 : prevIndex + 1
+      prevIndex === cards.length - 4 ? 0 : prevIndex + 1
     );
   };
 
@@ -25,19 +25,27 @@ export default function CardCarousel() {
     <Box w="100%" maxW="80%" mx="auto" p={4}>
       <Flex overflow="hidden">
         <Flex
+          flexDirection={{ base: "column", lg: "row" }}
           transition="all 0.5s"
-          transform={`translateX(-${currentIndex * 25}%)`}
+          transform={{
+            base: "none",
+            lg: `translateX(-${currentIndex * 26}%)`,
+            xl: `translateX(-${currentIndex * 25}%)`,
+          }}
+          mx="auto"
+          w={{ base: "100%", lg: "100%" }}
         >
           {cards.map((card) => (
             <Box
               key={card.id}
-              minW="24%"
-              maxW="24%"
+              minW={{ base: "100%", lg: "24%" }}
+              maxW={{ base: "100%", lg: "24%" }}
               minH="200px"
               p={4}
-              borderWidth="1px"
+              borderWidth="2px"
               borderRadius="lg"
-              mr={3}
+              mr={{ base: 0, lg: 3 }}
+              mb={{ base: 4, lg: 0 }}
             >
               <Text fontSize="xl" fontWeight="bold">
                 {card.title}

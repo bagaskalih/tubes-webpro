@@ -18,10 +18,7 @@ import {
   Button,
   useDisclosure,
   Icon,
-  useToast,
 } from "@chakra-ui/react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa"; // Ikon bintang
 
@@ -65,64 +62,8 @@ const dataAhli: Ahli[] = [
 ];
 
 export default function KonsultasiDenganAhli() {
-  const toast = useToast();
-  const router = useRouter();
-
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedAhli, setSelectedAhli] = useState<Ahli | null>(null);
-
-  const handleKonsultasi = async () => {
-    const { data: session } = useSession();
-
-    if (!session) {
-      toast({
-        title: "Anda belum login",
-        description:
-          "Silahkan login terlebih dahulu untuk melakukan konsultasi",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-      router.push("/signin");
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/consultations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          expertId: selectedAhli?.id,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to create consultation");
-      }
-
-      const data = await response.json();
-
-      toast({
-        title: "Konsultasi berhasil dibuat",
-        description: "Anda akan diarahkan ke halaman chat",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-      });
-
-      router.push(`/chat/${data.consultationId}`);
-    } catch (error) {
-      toast({
-        title: "Gagal membuat konsultasi",
-        description: "Silahkan coba lagi nanti",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    }
-  };
 
   const handleCardClick = (ahli: Ahli) => {
     setSelectedAhli(ahli);
@@ -159,7 +100,6 @@ export default function KonsultasiDenganAhli() {
           <Box
             key={ahli.id}
             p={4}
-            bg={useColorModeValue("white", "gray.700")}
             boxShadow={"md"}
             rounded={"md"}
             display={"flex"}
@@ -209,7 +149,7 @@ export default function KonsultasiDenganAhli() {
               </Flex>
             </ModalBody>
             <ModalFooter>
-              <Button colorScheme="green" mr={3} onClick={handleKonsultasi}>
+              <Button colorScheme="green" mr={3}>
                 Mulai Konsultasi
               </Button>
               <Button colorScheme="blue" mr={3} onClick={onClose}>

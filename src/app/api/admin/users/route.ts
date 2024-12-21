@@ -67,7 +67,7 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error) {
-    // console.error("Admin create user error:", error);
+    console.error("Admin create user error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }
@@ -113,7 +113,7 @@ export async function GET() {
 
     return NextResponse.json({ users });
   } catch (error) {
-    // console.error("Admin get users error:", error);
+    console.error("Admin get users error:", error);
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 }

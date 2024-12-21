@@ -106,6 +106,7 @@ export default function CreateUserForm() {
         });
       }
     } catch (error) {
+      console.error("Error creating user:", error);
       toast({
         title: "Error",
         description: "Terjadi kesalahan",

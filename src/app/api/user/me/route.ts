@@ -23,6 +23,7 @@ export async function GET() {
 
     return NextResponse.json(user);
   } catch (error) {
+    console.error("User me error:", error);
     return NextResponse.json(
       { message: "Something went wrong" },
       { status: 500 }

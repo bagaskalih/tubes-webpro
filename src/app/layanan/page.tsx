@@ -23,6 +23,10 @@ const listLayanan = [
     title: "BERGABUNG DI KOMUNITAS",
     link: "#",
   },
+  {
+    title: "AKSES BERITA TERKINI",
+    link: "news",
+  },
 ];
 
 export default function Layanan() {

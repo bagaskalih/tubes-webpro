@@ -35,6 +35,7 @@ const FormSchema = z.object({
 });
 
 export default function SignUpForm() {
+  const [isLoading, setIsLoading] = useState(false); // Loading state for the form submission
   const toast = useToast();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -50,6 +51,7 @@ export default function SignUpForm() {
 
   // Function to handle form submission
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
+    setIsLoading(true); // Start loading spinner
     const response = await fetch("/api/user", {
       method: "POST",
       headers: {
@@ -72,6 +74,14 @@ export default function SignUpForm() {
       });
       router.push("/signin");
     } else {
+      setIsLoading(false); // Stop loading spinner on error
+      toast({
+        title: "Gagal membuat akun",
+        description: "Silakan coba lagi",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
       console.error("Failed to sign up");
     }
   };
@@ -95,69 +105,72 @@ export default function SignUpForm() {
           boxShadow={"lg"}
           p={8}
         >
-          <Stack spacing={4}>
-            {/* Name Input */}
-            <FormControl id="name" isInvalid={!!errors.name}>
-              <FormLabel>Nama</FormLabel>
-              <Input type="text" {...register("name")} />
-              <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
-            </FormControl>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack spacing={4}>
+              {/* Name Input */}
+              <FormControl id="name" isInvalid={!!errors.name}>
+                <FormLabel>Nama</FormLabel>
+                <Input type="text" {...register("name")} />
+                <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
+              </FormControl>
 
-            {/* Email Input */}
-            <FormControl id="email" isInvalid={!!errors.email}>
-              <FormLabel>Alamat Email</FormLabel>
-              <Input type="email" {...register("email")} />
-              <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
-            </FormControl>
+              {/* Email Input */}
+              <FormControl id="email" isInvalid={!!errors.email}>
+                <FormLabel>Alamat Email</FormLabel>
+                <Input type="email" {...register("email")} />
+                <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
+              </FormControl>
 
-            {/* Password Input */}
-            <FormControl id="password" isInvalid={!!errors.password}>
-              <FormLabel>Password</FormLabel>
-              <InputGroup>
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  {...register("password")}
-                />
-                <InputRightElement h={"full"}>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() =>
-                      setShowPassword((showPassword) => !showPassword)
-                    }
-                  >
-                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-              <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
-            </FormControl>
+              {/* Password Input */}
+              <FormControl id="password" isInvalid={!!errors.password}>
+                <FormLabel>Password</FormLabel>
+                <InputGroup>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    {...register("password")}
+                  />
+                  <InputRightElement h={"full"}>
+                    <Button
+                      variant={"ghost"}
+                      onClick={() =>
+                        setShowPassword((showPassword) => !showPassword)
+                      }
+                    >
+                      {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
+              </FormControl>
 
-            {/* Submit Button */}
-            <Stack spacing={10} pt={2}>
-              <Button
-                loadingText="Submitting"
-                size="lg"
-                bg={"blue.400"}
-                color={"white"}
-                _hover={{
-                  bg: "blue.500",
-                }}
-                onClick={handleSubmit(onSubmit)}
-              >
-                Sign up
-              </Button>
+              {/* Submit Button */}
+              <Stack spacing={10} pt={2}>
+                <Button
+                  loadingText="Submitting"
+                  size="lg"
+                  bg={"blue.400"}
+                  color={"white"}
+                  _hover={{
+                    bg: "blue.500",
+                  }}
+                  onClick={handleSubmit(onSubmit)}
+                  isLoading={isLoading}
+                >
+                  Sign up
+                </Button>
+              </Stack>
+
+              {/* Link to Sign In */}
+              <Stack pt={6}>
+                <Text align={"center"}>
+                  Sudah punya akun?{" "}
+                  <Link color={"blue.400"} href="/signin">
+                    Masuk
+                  </Link>
+                </Text>
+              </Stack>
             </Stack>
-
-            {/* Link to Sign In */}
-            <Stack pt={6}>
-              <Text align={"center"}>
-                Sudah punya akun?{" "}
-                <Link color={"blue.400"} href="/signin">
-                  Masuk
-                </Link>
-              </Text>
-            </Stack>
-          </Stack>
+          </form>
         </Box>
       </Stack>
     </Flex>

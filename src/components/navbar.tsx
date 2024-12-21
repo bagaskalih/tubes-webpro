@@ -301,4 +301,8 @@ const NAV_ITEMS: Array<NavItem> = [
     label: "Panduan",
     href: "#",
   },
+  {
+    label: "Berita",
+    href: "/news",
+  },
 ];

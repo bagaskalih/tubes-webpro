@@ -36,9 +36,6 @@ export default function WithSubnavigation() {
         minH={"60px"}
         py={{ base: 2 }}
         px={{ base: 4 }}
-        borderBottom={1}
-        borderStyle={"solid"}
-        borderColor={useColorModeValue("gray.200", "gray.900")}
         align={"center"}
       >
         <Flex
@@ -76,18 +73,22 @@ export default function WithSubnavigation() {
           spacing={6}
         >
           {session?.user ? (
-            <Button
-              fontSize={"sm"}
-              fontWeight={400}
-              onClick={() => signOut()}
-              bg={"red.500"}
-              color={"white"}
-              _hover={{
-                bg: "red.400",
-              }}
-            >
-              Keluar
-            </Button>
+            // show username
+            <>
+              <Text alignContent={"center"}>{session.user.name}</Text>
+              <Button
+                fontSize={"sm"}
+                fontWeight={400}
+                onClick={() => signOut()}
+                bg={"red.500"}
+                color={"white"}
+                _hover={{
+                  bg: "red.400",
+                }}
+              >
+                Keluar
+              </Button>
+            </>
           ) : (
             <>
               <Button
@@ -294,7 +295,7 @@ const NAV_ITEMS: Array<NavItem> = [
   },
   {
     label: "Layanan",
-    href: "#",
+    href: "/layanan",
   },
   {
     label: "Panduan",

@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import WithSubnavigation from "@/components/navbar";
-import { Toast } from "@chakra-ui/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,11 +31,10 @@ export default function RootLayout({
       >
         <Providers>
           <div className="relative flex flex-col h-screen">
-            <header>
+            <header className="w-4/5 mx-auto">
               <WithSubnavigation />
             </header>
             <main className="flex-1 p-4">{children}</main>
-            <Toast />
           </div>
         </Providers>
       </body>

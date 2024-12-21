@@ -10,6 +10,7 @@ const userSchema = z.object({
     .email("Email tidak valid")
     .nonempty("Email tidak boleh kosong"),
   password: z.string().min(8, "Password minimal 8 karakter"),
+  role: z.enum(["ADMIN", "EXPERT", "USER"]).default("USER"),
 });
 
 export async function POST(req: Request) {
@@ -36,6 +37,7 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
+        role: "USER",
       },
     });
     const { ...rest } = newUser;

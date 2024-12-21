@@ -63,7 +63,21 @@ export default function SignInForm() {
         position: "bottom-right",
       });
     } else {
-      router.push("/");
+      // Fetch user role after successful login
+      const response = await fetch("/api/user/me");
+      const userData = await response.json();
+
+      // Redirect based on role
+      switch (userData.role) {
+        case "ADMIN":
+          router.push("/admin/dashboard");
+          break;
+        case "EXPERT":
+          router.push("/expert/dashboard");
+          break;
+        default:
+          router.push("/");
+      }
     }
   };
 

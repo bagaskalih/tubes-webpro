@@ -24,7 +24,6 @@ export const authOptions: NextAuthOptions = {
         },
         password: { label: "Password", type: "password" },
       },
-
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           return null;
@@ -50,6 +49,7 @@ export const authOptions: NextAuthOptions = {
           id: `${existingUser.id}`,
           email: existingUser.email,
           name: existingUser.name,
+          role: existingUser.role,
         };
       },
     }),
@@ -59,8 +59,10 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         return {
           ...token,
+          id: user.id,
           email: user.email,
           name: user.name,
+          role: user.role,
         };
       }
       return token;
@@ -68,7 +70,13 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       return {
         ...session,
-        user: { ...session.user, email: token.email, name: token.name },
+        user: {
+          ...session.user,
+          id: token.id,
+          email: token.email,
+          name: token.name,
+          role: token.role,
+        },
       };
     },
   },

@@ -20,8 +20,8 @@ const listLayanan = [
     link: "konsultasi",
   },
   {
-    title: "BERGABUNG DI KOMUNITAS",
-    link: "#",
+    title: "FORUM KOMUNITAS",
+    link: "forum",
   },
   {
     title: "AKSES BERITA TERKINI",

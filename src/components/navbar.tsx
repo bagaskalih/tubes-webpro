@@ -78,7 +78,9 @@ export default function WithSubnavigation() {
           {session?.user ? (
             // show username
             <>
-              <Text alignContent={"center"}>{session.user.name}</Text>
+              <Text alignContent={"center"} w={"max-content"}>
+                {session.user.name}
+              </Text>
               <Button
                 fontSize={"sm"}
                 fontWeight={400}

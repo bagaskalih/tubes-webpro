@@ -71,7 +71,7 @@ const ForumPage = () => {
 
   useEffect(() => {
     fetchThreads();
-  }, []);
+  }, [category]);
 
   const handleCreateThread = async (e: React.FormEvent) => {
     e.preventDefault();

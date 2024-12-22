@@ -51,7 +51,7 @@ function ThreadContent({ threadId }: { threadId: string }) {
   useEffect(() => {
     if (!threadId) return;
     fetchThread();
-  }, []);
+  }, [threadId]);
 
   const fetchThread = async () => {
     try {

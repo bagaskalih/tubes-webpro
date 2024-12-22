@@ -1,6 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
+// This is your Prisma schema file
 generator client {
   provider = "prisma-client-js"
 }
@@ -16,18 +14,34 @@ enum Role {
   EXPERT
 }
 
-model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  name      String
-  password  String
-  role      Role      @default(USER)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  posts     Post[]    @relation("PostAuthor")
-  comments  Comment[] @relation("CommentAuthor")
+enum Category {
+  GENERAL
+  TECHNOLOGY
+  HEALTH
+  EDUCATION
+  OTHER
 }
 
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // blog relations
+  posts    Post[]    @relation("PostAuthor")
+  comments Comment[] @relation("CommentAuthor")
+
+  // Forum relations
+  threads       Thread[]       @relation("ThreadAuthor")
+  forumComments ForumComment[] @relation("ForumCommentAuthor")
+  forumLikes    ForumLike[]
+}
+
+// Existing blog models
 model Post {
   id        Int       @id @default(autoincrement())
   title     String
@@ -49,4 +63,41 @@ model Comment {
   postId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Forum models
+model Thread {
+  id        Int            @id @default(autoincrement())
+  title     String
+  content   String         @db.Text
+  category  Category       @default(GENERAL)
+  author    User           @relation("ThreadAuthor", fields: [authorId], references: [id])
+  authorId  Int
+  comments  ForumComment[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+model ForumComment {
+  id        Int         @id @default(autoincrement())
+  content   String      @db.Text
+  author    User        @relation("ForumCommentAuthor", fields: [authorId], references: [id])
+  authorId  Int
+  thread    Thread      @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  threadId  Int
+  likes     ForumLike[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model ForumLike {
+  id        Int          @id @default(autoincrement())
+  type      String // "LIKE" or "DISLIKE"
+  user      User         @relation(fields: [userId], references: [id])
+  userId    Int
+  comment   ForumComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId Int
+  createdAt DateTime     @default(now())
+
+  @@unique([userId, commentId])
 }

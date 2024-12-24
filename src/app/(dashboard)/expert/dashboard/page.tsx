@@ -94,7 +94,7 @@ export default async function ExpertDashboard() {
       <Stack spacing={8}>
         <Box>
           <Heading size="lg" mb={4}>
-            Welcome back, Dr. {session.user.name}
+            Selamat Datang Kembali, Dr. {session.user.name}
           </Heading>
           <Button
             as={Link}
@@ -102,7 +102,7 @@ export default async function ExpertDashboard() {
             colorScheme="green"
             width="fit-content"
           >
-            Write New Article
+            Tulis Artikel Baru
           </Button>
         </Box>
 
@@ -116,17 +116,17 @@ export default async function ExpertDashboard() {
             <StatNumber>{stats.totalConsultations}</StatNumber>
           </Stat>
           <Stat>
-            <StatLabel>Average Rating</StatLabel>
+            <StatLabel>Rating</StatLabel>
             <StatNumber>{stats.rating.toFixed(1)}/5</StatNumber>
             <Text fontSize="sm" color="gray.500">
-              From {stats.totalReviews} reviews
+              Dari {stats.totalReviews} review
             </Text>
           </Stat>
         </StatGroup>
 
         <Box>
           <Heading size="md" mb={4}>
-            Active Consultations
+            Konsultasi Aktif
           </Heading>
           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
             {activeChats.map((chat) => (
@@ -145,7 +145,7 @@ export default async function ExpertDashboard() {
                 <CardBody>
                   <Stack spacing={3}>
                     <HStack>
-                      <Badge colorScheme="green">Active</Badge>
+                      <Badge colorScheme="green">Aktif</Badge>
                       {chat.messages.length === 0 && (
                         <Badge colorScheme="red">New</Badge>
                       )}

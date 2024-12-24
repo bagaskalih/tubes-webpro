@@ -143,7 +143,7 @@ export default function CreatePost() {
               isLoading={isSubmitting}
               alignSelf="flex-end"
             >
-              Publish Post
+              Publish Artikel
             </Button>
           </Stack>
         </Box>

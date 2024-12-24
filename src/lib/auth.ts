@@ -1,5 +1,6 @@
 // src/lib/auth.ts
-import { NextAuthOptions } from "next-auth";
+// eslint-disable-next-line
+import { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { db } from "./db";

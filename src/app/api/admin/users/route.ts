@@ -13,7 +13,18 @@ const userSchema = z.object({
     .email("Email tidak valid")
     .nonempty("Email tidak boleh kosong"),
   password: z.string().min(8, "Password minimal 8 karakter"),
-  role: z.enum(["EXPERT", "USER"] as const), // Explicitly type the enum values
+  role: z.enum(["EXPERT", "USER"] as const),
+  specialty: z
+    .enum([
+      "CHILD_NUTRITION",
+      "CHILD_PSYCHOLOGY",
+      "PARENTING",
+      "CHILD_DEVELOPMENT",
+      "CHILD_EDUCATION",
+    ] as const)
+    .optional(),
+  about: z.string().optional(),
+  profileImage: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -35,8 +46,8 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { name, email, password, role } = userSchema.parse(body);
-
+    const { name, email, password, role, specialty, about, profileImage } =
+      userSchema.parse(body);
     const existingUser = await db.user.findUnique({
       where: { email },
     });
@@ -50,15 +61,15 @@ export async function POST(req: Request) {
 
     const hashedPassword = await hash(password, 10);
 
-    // console.error(role);
-
-    // Create user with explicit role casting
     const user = await db.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
         role,
+        specialty,
+        about,
+        profileImage,
       },
     });
 
@@ -99,6 +110,11 @@ export async function GET() {
         name: true,
         email: true,
         role: true,
+        specialty: true,
+        about: true,
+        profileImage: true,
+        rating: true,
+        totalReviews: true,
         createdAt: true,
       },
       where: {

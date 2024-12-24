@@ -22,25 +22,57 @@ import {
   Th,
   Td,
   TableContainer,
+  Textarea,
 } from "@chakra-ui/react";
 import { z } from "zod";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
 import type { User } from "@/types";
 
-// Define form schema
-const createUserSchema = z.object({
-  name: z.string().nonempty("Nama tidak boleh kosong"),
-  email: z
-    .string()
-    .email("Email tidak valid")
-    .nonempty("Email tidak boleh kosong"),
-  password: z.string().min(8, "Password minimal 8 karakter"),
-  role: z.enum(["EXPERT", "USER"]),
-});
+enum ExpertSpecialty {
+  CHILD_NUTRITION = "CHILD_NUTRITION",
+  CHILD_PSYCHOLOGY = "CHILD_PSYCHOLOGY",
+  PARENTING = "PARENTING",
+  CHILD_DEVELOPMENT = "CHILD_DEVELOPMENT",
+  CHILD_EDUCATION = "CHILD_EDUCATION",
+}
+
+const createUserSchema = z
+  .object({
+    name: z.string().nonempty("Nama tidak boleh kosong"),
+    email: z
+      .string()
+      .email("Email tidak valid")
+      .nonempty("Email tidak boleh kosong"),
+    password: z.string().min(8, "Password minimal 8 karakter"),
+    role: z.enum(["EXPERT", "USER"]),
+    specialty: z.nativeEnum(ExpertSpecialty).optional(),
+    about: z.string().optional(),
+    profileImage: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.role === "EXPERT") {
+        return data.specialty !== undefined && data.about !== undefined;
+      }
+      return true;
+    },
+    {
+      message: "Specialty and About are required for experts",
+      path: ["specialty"],
+    }
+  );
 
 type FormData = z.infer<typeof createUserSchema>;
+
+const specialtyLabels: Record<ExpertSpecialty, string> = {
+  CHILD_NUTRITION: "Nutrisi Anak",
+  CHILD_PSYCHOLOGY: "Psikologi Anak",
+  PARENTING: "Parenting",
+  CHILD_DEVELOPMENT: "Perkembangan Anak",
+  CHILD_EDUCATION: "Pendidikan Anak",
+};
 
 export default function CreateUserForm() {
   const toast = useToast();
@@ -50,12 +82,18 @@ export default function CreateUserForm() {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {
       role: "USER",
     },
+  });
+
+  const role = useWatch({
+    control,
+    name: "role",
   });
 
   const fetchUsers = async () => {
@@ -76,6 +114,7 @@ export default function CreateUserForm() {
 
   const onSubmit = async (values: FormData) => {
     try {
+      console.log("Creating user:", values);
       const response = await fetch("/api/admin/users", {
         method: "POST",
         headers: {
@@ -95,7 +134,7 @@ export default function CreateUserForm() {
           isClosable: true,
         });
         reset();
-        fetchUsers(); // Refresh the user list
+        fetchUsers();
       } else {
         toast({
           title: "Gagal",
@@ -156,6 +195,50 @@ export default function CreateUserForm() {
                   <FormErrorMessage>{errors.role?.message}</FormErrorMessage>
                 </FormControl>
 
+                {role === "EXPERT" && (
+                  <>
+                    <FormControl isInvalid={!!errors.specialty}>
+                      <FormLabel>Bidang Keahlian</FormLabel>
+                      <Select {...register("specialty")}>
+                        <option value="">Pilih Bidang Keahlian</option>
+                        {Object.entries(specialtyLabels).map(
+                          ([value, label]) => (
+                            <option key={value} value={value}>
+                              {label}
+                            </option>
+                          )
+                        )}
+                      </Select>
+                      <FormErrorMessage>
+                        {errors.specialty?.message}
+                      </FormErrorMessage>
+                    </FormControl>
+
+                    <FormControl isInvalid={!!errors.about}>
+                      <FormLabel>Tentang</FormLabel>
+                      <Textarea
+                        {...register("about")}
+                        placeholder="Masukkan deskripsi tentang keahlian dan pengalaman Anda"
+                        rows={4}
+                      />
+                      <FormErrorMessage>
+                        {errors.about?.message}
+                      </FormErrorMessage>
+                    </FormControl>
+
+                    <FormControl isInvalid={!!errors.profileImage}>
+                      <FormLabel>URL Foto Profil</FormLabel>
+                      <Input
+                        {...register("profileImage")}
+                        placeholder="Masukkan URL foto profil"
+                      />
+                      <FormErrorMessage>
+                        {errors.profileImage?.message}
+                      </FormErrorMessage>
+                    </FormControl>
+                  </>
+                )}
+
                 <Button
                   mt={4}
                   colorScheme="blue"
@@ -181,6 +264,7 @@ export default function CreateUserForm() {
                     <Th>Nama</Th>
                     <Th>Email</Th>
                     <Th>Role</Th>
+                    <Th>Bidang Keahlian</Th>
                     <Th>Tanggal Dibuat</Th>
                   </Tr>
                 </Thead>
@@ -190,6 +274,11 @@ export default function CreateUserForm() {
                       <Td>{user.name}</Td>
                       <Td>{user.email}</Td>
                       <Td>{user.role}</Td>
+                      <Td>
+                        {user.specialty
+                          ? specialtyLabels[user.specialty as ExpertSpecialty]
+                          : "-"}
+                      </Td>
                       <Td>
                         {new Date(user.createdAt).toLocaleDateString("id-ID")}
                       </Td>

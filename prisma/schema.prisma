@@ -22,6 +22,19 @@ enum Category {
   OTHER
 }
 
+enum ChatStatus {
+  ACTIVE
+  RESOLVED
+}
+
+enum ExpertSpecialty {
+  CHILD_NUTRITION
+  CHILD_PSYCHOLOGY
+  PARENTING
+  CHILD_DEVELOPMENT
+  CHILD_EDUCATION
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
@@ -31,10 +44,21 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Expert fields
-  specialistType String?
-  rating         Float   @default(0) // Average rating
-  reviewCount    Int     @default(0) // Number of reviews
+  // Expert specific fields
+  specialty    ExpertSpecialty?
+  about        String?
+  rating       Float?           @default(0)
+  totalReviews Int?             @default(0)
+  totalRatings Int?             @default(0)
+  profileImage String?
+
+  // Chat relations
+  sentMessages     Message[]  @relation("SentMessages")
+  receivedMessages Message[]  @relation("ReceivedMessages")
+  chatRooms        ChatRoom[] @relation("UserChatRooms")
+  expertChatRooms  ChatRoom[] @relation("ExpertChatRooms")
+  reviews          Review[]   @relation("UserReviews")
+  receivedReviews  Review[]   @relation("ExpertReviews")
 
   // blog relations
   posts    Post[]    @relation("PostAuthor")
@@ -44,33 +68,46 @@ model User {
   threads       Thread[]       @relation("ThreadAuthor")
   forumComments ForumComment[] @relation("ForumCommentAuthor")
   forumLikes    ForumLike[]
-
-  // chat relations
-  chatsAsUser   Chat[]    @relation("UserChats")
-  chatsAsExpert Chat[]    @relation("ExpertChats")
-  Message       Message[]
 }
 
 // Chat model
-model Chat {
-  id        Int       @id @default(autoincrement())
+model ChatRoom {
+  id        Int        @id @default(autoincrement())
+  user      User       @relation("UserChatRooms", fields: [userId], references: [id])
   userId    Int
-  user      User      @relation("UserChats", fields: [userId], references: [id])
+  expert    User       @relation("ExpertChatRooms", fields: [expertId], references: [id])
   expertId  Int
-  expert    User      @relation("ExpertChats", fields: [expertId], references: [id])
+  status    ChatStatus @default(ACTIVE)
   messages  Message[]
-  resolved  Boolean   @default(false)
-  createdAt DateTime  @default(now())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  review    Review?
 }
 
 model Message {
-  id        Int      @id @default(autoincrement())
-  content   String
-  chatId    Int
-  chat      Chat     @relation(fields: [chatId], references: [id])
-  senderId  Int
-  sender    User     @relation(fields: [senderId], references: [id])
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  content    String   @db.Text
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  senderId   Int
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId Int
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
+  chatRoomId Int
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  rating     Int
+  comment    String?  @db.Text
+  user       User     @relation("UserReviews", fields: [userId], references: [id])
+  userId     Int
+  expert     User     @relation("ExpertReviews", fields: [expertId], references: [id])
+  expertId   Int
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id])
+  chatRoomId Int      @unique
+  createdAt  DateTime @default(now())
 }
 
 // News model

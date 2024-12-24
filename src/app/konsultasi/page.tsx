@@ -18,59 +18,90 @@ import {
   Button,
   useDisclosure,
   Icon,
+  useToast,
 } from "@chakra-ui/react";
-import { useState } from "react";
-import { FaStar, FaRegStar } from "react-icons/fa"; // Ikon bintang
+import { useState, useEffect } from "react";
+import { FaStar, FaRegStar } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-interface Ahli {
+interface Expert {
   id: number;
   name: string;
-  profession: string;
-  description: string;
-  image: string;
-  rating: number; // Tambahkan rating di data
+  specialty: string;
+  about: string;
+  profileImage: string;
+  rating: number;
+  totalReviews: number;
 }
-
-const dataAhli: Ahli[] = [
-  {
-    id: 1,
-    name: "Dr. Andi Saputra",
-    profession: "Psikolog Anak",
-    description:
-      "Dr. Andi adalah seorang psikolog berpengalaman dalam bidang tumbuh kembang anak.",
-    image: "https://via.placeholder.com/150",
-    rating: 4.5,
-  },
-  {
-    id: 2,
-    name: "Dr. Siti Rahmawati",
-    profession: "Konsultan Parenting",
-    description:
-      "Dr. Siti adalah konsultan yang membantu orang tua dalam mendidik anak.",
-    image: "https://via.placeholder.com/150",
-    rating: 5,
-  },
-  {
-    id: 3,
-    name: "Dr. Budi Santoso",
-    profession: "Ahli Gizi Anak",
-    description:
-      "Dr. Budi spesialis gizi yang fokus pada nutrisi seimbang untuk anak.",
-    image: "https://via.placeholder.com/150",
-    rating: 4,
-  },
-];
 
 export default function KonsultasiDenganAhli() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedAhli, setSelectedAhli] = useState<Ahli | null>(null);
+  const [selectedExpert, setSelectedExpert] = useState<Expert | null>(null);
+  const [experts, setExperts] = useState<Expert[]>([]);
+  const router = useRouter();
+  const { data: session } = useSession();
+  const toast = useToast();
 
-  const handleCardClick = (ahli: Ahli) => {
-    setSelectedAhli(ahli);
+  useEffect(() => {
+    fetchExperts();
+  }, []);
+
+  const fetchExperts = async () => {
+    try {
+      const response = await fetch("/api/experts");
+      const data = await response.json();
+      setExperts(data.experts);
+    } catch (error) {
+      console.error("Error fetching experts:", error);
+    }
+  };
+
+  const handleCardClick = (expert: Expert) => {
+    setSelectedExpert(expert);
     onOpen();
   };
 
-  // Komponen untuk menampilkan bintang berdasarkan rating
+  const startConsultation = async () => {
+    if (!session) {
+      toast({
+        title: "Login Required",
+        description: "Please login to start a consultation",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+      });
+      router.push("/signin");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/chat/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          expertId: selectedExpert?.id,
+        }),
+      });
+
+      const data = await response.json();
+      if (data.chatRoomId) {
+        router.push(`/chat/${data.chatRoomId}`);
+      }
+    } catch (error) {
+      console.error("Error starting consultation:", error);
+      toast({
+        title: "Error",
+        description: "Failed to start consultation",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  };
+
   const renderStars = (rating: number) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -96,9 +127,9 @@ export default function KonsultasiDenganAhli() {
     >
       <Heading mb={6}>Daftar Ahli</Heading>
       <Stack spacing={6} w={"full"} maxW={"3xl"}>
-        {dataAhli.map((ahli) => (
+        {experts.map((expert) => (
           <Box
-            key={ahli.id}
+            key={expert.id}
             p={4}
             boxShadow={"md"}
             rounded={"md"}
@@ -106,53 +137,65 @@ export default function KonsultasiDenganAhli() {
             alignItems={"center"}
             gap={4}
             _hover={{ boxShadow: "lg", cursor: "pointer" }}
-            onClick={() => handleCardClick(ahli)}
+            onClick={() => handleCardClick(expert)}
           >
             <Image
               borderRadius="full"
               boxSize="75px"
-              src={ahli.image}
-              alt={ahli.name}
+              src={expert.profileImage || "https://via.placeholder.com/150"}
+              alt={expert.name}
             />
             <Box>
               <Text fontWeight={"bold"} fontSize={"lg"}>
-                {ahli.name}
+                {expert.name}
               </Text>
-              <Text color={"gray.500"}>{ahli.profession}</Text>
-              <Flex mt={2}>{renderStars(ahli.rating)}</Flex>
+              <Text color={"gray.500"}>{expert.specialty}</Text>
+              <Flex mt={2} alignItems="center" gap={2}>
+                {renderStars(expert.rating)}
+                <Text color="gray.500" fontSize="sm">
+                  ({expert.totalReviews} reviews)
+                </Text>
+              </Flex>
             </Box>
           </Box>
         ))}
       </Stack>
 
-      {/* Modal Profil Ahli */}
-      {selectedAhli && (
+      {selectedExpert && (
         <Modal isOpen={isOpen} onClose={onClose} isCentered>
           <ModalOverlay />
           <ModalContent>
-            <ModalHeader>{selectedAhli.name}</ModalHeader>
+            <ModalHeader>{selectedExpert.name}</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Flex direction={"column"} align={"center"} textAlign={"center"}>
                 <Image
                   borderRadius="full"
                   boxSize="150px"
-                  src={selectedAhli.image}
-                  alt={selectedAhli.name}
+                  src={
+                    selectedExpert.profileImage ||
+                    "https://via.placeholder.com/150"
+                  }
+                  alt={selectedExpert.name}
                   mb={4}
                 />
                 <Text fontWeight={"bold"} fontSize={"lg"} mb={2}>
-                  {selectedAhli.profession}
+                  {selectedExpert.specialty}
                 </Text>
-                <Flex mb={4}>{renderStars(selectedAhli.rating)}</Flex>
-                <Text textAlign={"justify"}>{selectedAhli.description}</Text>
+                <Flex mb={4} alignItems="center" gap={2}>
+                  {renderStars(selectedExpert.rating)}
+                  <Text color="gray.500" fontSize="sm">
+                    ({selectedExpert.totalReviews} reviews)
+                  </Text>
+                </Flex>
+                <Text textAlign={"justify"}>{selectedExpert.about}</Text>
               </Flex>
             </ModalBody>
             <ModalFooter>
-              <Button colorScheme="green" mr={3}>
+              <Button colorScheme="green" mr={3} onClick={startConsultation}>
                 Mulai Konsultasi
               </Button>
-              <Button colorScheme="blue" mr={3} onClick={onClose}>
+              <Button colorScheme="blue" onClick={onClose}>
                 Tutup
               </Button>
             </ModalFooter>

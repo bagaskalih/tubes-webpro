@@ -31,11 +31,11 @@ import { useState, useEffect } from "react";
 import type { User } from "@/types";
 
 enum ExpertSpecialty {
-  CHILD_NUTRITION = "CHILD_NUTRITION",
-  CHILD_PSYCHOLOGY = "CHILD_PSYCHOLOGY",
+  NUTRISI_ANAK = "NUTRISI_ANAK",
+  PSIKOLOGI_ANAK = "PSIKOLOGI_ANAK",
   PARENTING = "PARENTING",
-  CHILD_DEVELOPMENT = "CHILD_DEVELOPMENT",
-  CHILD_EDUCATION = "CHILD_EDUCATION",
+  PERKEMBANGAN_ANAK = "PERKEMBANGAN_ANAK",
+  EDUKASI_ANAK = "EDUKASI_ANAK",
 }
 
 const createUserSchema = z
@@ -67,11 +67,11 @@ const createUserSchema = z
 type FormData = z.infer<typeof createUserSchema>;
 
 const specialtyLabels: Record<ExpertSpecialty, string> = {
-  CHILD_NUTRITION: "Nutrisi Anak",
-  CHILD_PSYCHOLOGY: "Psikologi Anak",
+  NUTRISI_ANAK: "Nutrisi Anak",
+  PSIKOLOGI_ANAK: "Psikologi Anak",
   PARENTING: "Parenting",
-  CHILD_DEVELOPMENT: "Perkembangan Anak",
-  CHILD_EDUCATION: "Pendidikan Anak",
+  PERKEMBANGAN_ANAK: "Perkembangan Anak",
+  EDUKASI_ANAK: "Pendidikan Anak",
 };
 
 export default function CreateUserForm() {

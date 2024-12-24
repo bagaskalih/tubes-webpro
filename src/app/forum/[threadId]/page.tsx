@@ -30,6 +30,22 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FaThumbsUp, FaThumbsDown, FaTrash } from "react-icons/fa";
 
+enum ExpertSpecialty {
+  NUTRISI_ANAK = "NUTRISI_ANAK",
+  PSIKOLOGI_ANAK = "PSIKOLOGI_ANAK",
+  PARENTING = "PARENTING",
+  PERKEMBANGAN_ANAK = "PERKEMBANGAN_ANAK",
+  EDUKASI_ANAK = "EDUKASI_ANAK",
+}
+
+const specialtyLabels: Record<ExpertSpecialty, string> = {
+  NUTRISI_ANAK: "Nutrisi Anak",
+  PSIKOLOGI_ANAK: "Psikologi Anak",
+  PARENTING: "Parenting",
+  PERKEMBANGAN_ANAK: "Perkembangan Anak",
+  EDUKASI_ANAK: "Pendidikan Anak",
+};
+
 interface PageParams {
   params: Promise<{ threadId: string }>;
 }
@@ -58,7 +74,15 @@ function ThreadContent({ threadId }: { threadId: string }) {
       const response = await fetch(`/api/forum/thread/${threadId}`);
       if (!response.ok) throw new Error("Thread not found");
       const data = await response.json();
-      setThread(data.thread);
+
+      // Sort comments by like count before setting the thread
+      const sortedThread = {
+        ...data.thread,
+        comments: [...data.thread.comments].sort(
+          (a, b) => b._count.likes - a._count.likes
+        ),
+      };
+      setThread(sortedThread);
     } catch (error) {
       console.error(error);
       toast({
@@ -203,7 +227,7 @@ function ThreadContent({ threadId }: { threadId: string }) {
 
         <Box>
           <Heading size="md" mb={4}>
-            Comments
+            Komentar
           </Heading>
 
           <form onSubmit={handleAddComment}>
@@ -213,8 +237,8 @@ function ThreadContent({ threadId }: { threadId: string }) {
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder={
                   session
-                    ? "Add a comment..."
-                    : "Please sign in to add a comment"
+                    ? "Tulis komentar..."
+                    : "Silakan masuk untuk menulis komentar"
                 }
                 disabled={!session}
               />
@@ -225,7 +249,7 @@ function ThreadContent({ threadId }: { threadId: string }) {
                 disabled={!session}
                 alignSelf="flex-end"
               >
-                Add Comment
+                Kirim
               </Button>
             </Stack>
           </form>
@@ -237,7 +261,14 @@ function ThreadContent({ threadId }: { threadId: string }) {
                   <Stack spacing={2}>
                     <HStack justify="space-between">
                       <Text fontSize="sm">
-                        {comment.author.name} ({comment.author.role})
+                        {comment.author.name} (
+                        {comment.author.role === "EXPERT"
+                          ? "Ahli " +
+                            specialtyLabels[
+                              comment.author.specialty as ExpertSpecialty
+                            ]
+                          : comment.author.role}
+                        )
                       </Text>
                       <HStack>
                         <IconButton
@@ -272,7 +303,6 @@ function ThreadContent({ threadId }: { threadId: string }) {
         </Box>
       </Stack>
 
-      {/* Delete Confirmation Modal */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>

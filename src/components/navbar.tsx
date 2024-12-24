@@ -15,6 +15,13 @@ import {
   useColorModeValue,
   useBreakpointValue,
   useDisclosure,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Avatar,
+  Center,
+  MenuDivider,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -24,10 +31,55 @@ import {
 } from "@chakra-ui/icons";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
+
+interface NavItem {
+  label: string;
+  subLabel?: string;
+  children?: Array<NavItem>;
+  href?: string;
+}
+
+const NAV_ITEMS: Array<NavItem> = [
+  {
+    label: "Beranda",
+    href: "/",
+  },
+  {
+    label: "Layanan",
+    href: "/layanan",
+  },
+  {
+    label: "Artikel",
+    href: "/artikel",
+  },
+  {
+    label: "Forum",
+    href: "/forum",
+  },
+];
 
 export default function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
   const { data: session } = useSession();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
+  const handleDashboard = async () => {
+    if (session?.user.role === "EXPERT") {
+      redirect("/expert/dashboard");
+    } else if (session?.user.role === "USER") {
+      redirect("/user/dashboard");
+    } else if (session?.user.role === "ADMIN") {
+      redirect("/admin/dashboard");
+    }
+  };
+
+  const handleSettings = async () => {
+    redirect("/settings");
+  };
 
   return (
     <Box>
@@ -76,24 +128,41 @@ export default function WithSubnavigation() {
           spacing={6}
         >
           {session?.user ? (
-            // show username
-            <>
-              <Text alignContent={"center"} w={"max-content"}>
-                {session.user.name}
-              </Text>
-              <Button
-                fontSize={"sm"}
-                fontWeight={400}
-                onClick={() => signOut()}
-                bg={"red.500"}
-                color={"white"}
-                _hover={{
-                  bg: "red.400",
-                }}
+            <Menu>
+              <MenuButton
+                as={Button}
+                rounded={"full"}
+                variant={"link"}
+                cursor={"pointer"}
+                minW={0}
               >
-                Keluar
-              </Button>
-            </>
+                <Avatar
+                  size={"sm"}
+                  src={session.user.profileImage || undefined}
+                />
+              </MenuButton>
+              <MenuList alignItems={"center"}>
+                <br />
+                <Center>
+                  <Avatar
+                    size={"2xl"}
+                    src={"https://avatars.dicebear.com/api/male/username.svg"}
+                  />
+                </Center>
+                <br />
+                <Center>
+                  <Text fontWeight={600}>{session.user.name}</Text>
+                </Center>
+                <br />
+                <MenuDivider />
+                <MenuItem onClick={handleDashboard}>Dashboard</MenuItem>
+                <MenuItem onClick={handleSettings}>Pengaturan Akun</MenuItem>
+                <MenuDivider />
+                <MenuItem color={"red"} onClick={handleSignOut}>
+                  Keluar
+                </MenuItem>
+              </MenuList>
+            </Menu>
           ) : (
             <>
               <Button
@@ -285,29 +354,3 @@ const MobileNavItem = ({ label, children, href }: NavItem) => {
     </Stack>
   );
 };
-
-interface NavItem {
-  label: string;
-  subLabel?: string;
-  children?: Array<NavItem>;
-  href?: string;
-}
-
-const NAV_ITEMS: Array<NavItem> = [
-  {
-    label: "Beranda",
-    href: "/",
-  },
-  {
-    label: "Layanan",
-    href: "/layanan",
-  },
-  {
-    label: "Panduan",
-    href: "#",
-  },
-  {
-    label: "Berita",
-    href: "/news",
-  },
-];

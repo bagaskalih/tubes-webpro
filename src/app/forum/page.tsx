@@ -41,12 +41,12 @@ const ForumPage = () => {
   const [newThread, setNewThread] = useState({
     title: "",
     content: "",
-    category: "GENERAL" as
-      | "GENERAL"
-      | "TECHNOLOGY"
-      | "HEALTH"
-      | "EDUCATION"
-      | "OTHER",
+    category: "UMUM" as
+      | "UMUM"
+      | "TEKNOLOGI"
+      | "KESEHATAN"
+      | "EDUKASI"
+      | "LAINNYA",
   });
 
   const fetchThreads = async () => {
@@ -108,10 +108,10 @@ const ForumPage = () => {
     <Container maxW="container.xl" py={8}>
       <Stack spacing={6}>
         <HStack justify="space-between">
-          <Heading size="lg">Forum Discussions</Heading>
+          <Heading size="lg">Forum Diskusi</Heading>
           {session && (
             <Button colorScheme="blue" onClick={onOpen}>
-              Create New Thread
+              Buat Thread Baru
             </Button>
           )}
         </HStack>
@@ -121,12 +121,12 @@ const ForumPage = () => {
           onChange={(e) => setCategory(e.target.value)}
           maxW="200px"
         >
-          <option value="ALL">All Categories</option>
-          <option value="GENERAL">General</option>
-          <option value="TECHNOLOGY">Technology</option>
-          <option value="HEALTH">Health</option>
-          <option value="EDUCATION">Education</option>
-          <option value="OTHER">Other</option>
+          <option value="ALL">Semua Kategori</option>
+          <option value="UMUM">Umum</option>
+          <option value="TEKNOLOG8I">Teknologi</option>
+          <option value="KESEHATAN">Kesehatan</option>
+          <option value="EDUKASI">Edukasi</option>
+          <option value="LAINNYA">Lainnya</option>
         </Select>
 
         <Stack spacing={4}>
@@ -190,19 +190,19 @@ const ForumPage = () => {
                       setNewThread({
                         ...newThread,
                         category: e.target.value as
-                          | "GENERAL"
-                          | "TECHNOLOGY"
-                          | "HEALTH"
-                          | "EDUCATION"
-                          | "OTHER",
+                          | "UMUM"
+                          | "TEKNOLOGI"
+                          | "KESEHATAN"
+                          | "EDUKASI"
+                          | "LAINNYA",
                       })
                     }
                   >
-                    <option value="GENERAL">General</option>
-                    <option value="TECHNOLOGY">Technology</option>
-                    <option value="HEALTH">Health</option>
-                    <option value="EDUCATION">Education</option>
-                    <option value="OTHER">Other</option>
+                    <option value="UMUM">Umum</option>
+                    <option value="TEKNOLOGI">Teknologi</option>
+                    <option value="KESEHATAN">Kesehatan</option>
+                    <option value="EDUKASI">Edukasi</option>
+                    <option value="LAINNYA">Lainnya</option>
                   </Select>
                 </FormControl>
 

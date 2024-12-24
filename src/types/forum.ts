@@ -1,7 +1,8 @@
 export interface User {
   id: number;
   name: string;
-  role: "USER" | "ADMIN";
+  role: "USER" | "ADMIN" | "EXPERT";
+  specialty?: string;
 }
 
 export interface Comment {
@@ -20,7 +21,7 @@ export interface Thread {
   id: number;
   title: string;
   content: string;
-  category: "GENERAL" | "TECHNOLOGY" | "HEALTH" | "EDUCATION" | "OTHER";
+  category: "UMUM" | "TEKNOLOGI" | "KESEHATAN" | "EDUKASI" | "";
   author: {
     name: string;
     role: string;
@@ -32,9 +33,9 @@ export interface Thread {
 }
 
 export enum Category {
-  GENERAL = "GENERAL",
-  TECHNOLOGY = "TECHNOLOGY",
-  HEALTH = "HEALTH",
-  EDUCATION = "EDUCATION",
-  OTHER = "OTHER",
+  UMUM = "UMUM",
+  TEKNOLOGI = "TEKNOLOGI",
+  KESEHATAN = "KESEHATAN",
+  EDUKASI = "EDUKASI",
+  LAINNYA = "LAINNYA",
 }

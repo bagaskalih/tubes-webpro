@@ -111,7 +111,7 @@ export default function CreatePost() {
   return (
     <Container maxW="container.md" py={8}>
       <Stack spacing={8}>
-        <Heading>Buat Post Baru</Heading>
+        <Heading>Buat Artikel Baru</Heading>
 
         <Box as="form" onSubmit={handleSubmit(onSubmit)}>
           <Stack spacing={4}>

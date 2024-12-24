@@ -15,11 +15,11 @@ enum Role {
 }
 
 enum Category {
-  GENERAL
-  TECHNOLOGY
-  HEALTH
-  EDUCATION
-  OTHER
+  UMUM
+  TEKNOLOGI
+  KESEHATAN
+  EDUKASI
+  LAINNYA
 }
 
 enum ChatStatus {
@@ -28,11 +28,11 @@ enum ChatStatus {
 }
 
 enum ExpertSpecialty {
-  CHILD_NUTRITION
-  CHILD_PSYCHOLOGY
+  NUTRISI_ANAK
+  PSIKOLOGI_ANAK
   PARENTING
-  CHILD_DEVELOPMENT
-  CHILD_EDUCATION
+  PERTUMBUHAN_ANAK
+  EDUKASI_ANAK
 }
 
 model User {
@@ -139,7 +139,7 @@ model Thread {
   id        Int            @id @default(autoincrement())
   title     String
   content   String         @db.Text
-  category  Category       @default(GENERAL)
+  category  Category       @default(UMUM)
   author    User           @relation("ThreadAuthor", fields: [authorId], references: [id])
   authorId  Int
   comments  ForumComment[]

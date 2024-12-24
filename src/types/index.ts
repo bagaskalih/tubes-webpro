@@ -4,11 +4,11 @@ export interface User {
   email: string;
   role: "USER" | "EXPERT" | "ADMIN";
   specialty?:
-    | "CHILD_NUTRITION"
-    | "CHILD_PSYCHOLOGY"
+    | "NUTRISI_ANAK"
+    | "PSIKOLOGI_ANAK"
     | "PARENTING"
-    | "CHILD_DEVELOPMENT"
-    | "CHILD_EDUCATION";
+    | "PERKEMBANGAN_ANAK"
+    | "EDUKASI_ANAK";
   about?: string;
   profileImage?: string;
   rating?: number;

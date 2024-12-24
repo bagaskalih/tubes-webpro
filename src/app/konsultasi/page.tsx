@@ -35,6 +35,22 @@ interface Expert {
   totalReviews: number;
 }
 
+enum ExpertSpecialty {
+  NUTRISI_ANAK = "NUTRISI_ANAK",
+  PSIKOLOGI_ANAK = "PSIKOLOGI_ANAK",
+  PARENTING = "PARENTING",
+  PERKEMBANGAN_ANAK = "PERKEMBANGAN_ANAK",
+  EDUKASI_ANAK = "EDUKASI_ANAK",
+}
+
+const specialtyLabels: Record<ExpertSpecialty, string> = {
+  NUTRISI_ANAK: "Nutrisi Anak",
+  PSIKOLOGI_ANAK: "Psikologi Anak",
+  PARENTING: "Parenting",
+  PERKEMBANGAN_ANAK: "Perkembangan Anak",
+  EDUKASI_ANAK: "Pendidikan Anak",
+};
+
 export default function KonsultasiDenganAhli() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedExpert, setSelectedExpert] = useState<Expert | null>(null);
@@ -149,7 +165,9 @@ export default function KonsultasiDenganAhli() {
               <Text fontWeight={"bold"} fontSize={"lg"}>
                 {expert.name}
               </Text>
-              <Text color={"gray.500"}>{expert.specialty}</Text>
+              <Text color={"gray.500"}>
+                {specialtyLabels[expert.specialty as ExpertSpecialty]}
+              </Text>
               <Flex mt={2} alignItems="center" gap={2}>
                 {renderStars(expert.rating)}
                 <Text color="gray.500" fontSize="sm">
@@ -180,7 +198,10 @@ export default function KonsultasiDenganAhli() {
                   mb={4}
                 />
                 <Text fontWeight={"bold"} fontSize={"lg"} mb={2}>
-                  {selectedExpert.specialty}
+                  {selectedExpert.name}
+                </Text>
+                <Text fontWeight={"bold"} fontSize={"lg"} mb={2}>
+                  {specialtyLabels[selectedExpert.specialty as ExpertSpecialty]}
                 </Text>
                 <Flex mb={4} alignItems="center" gap={2}>
                   {renderStars(selectedExpert.rating)}

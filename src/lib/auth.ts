@@ -1,3 +1,4 @@
+// src/lib/auth.ts
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -24,6 +25,7 @@ export const authOptions: NextAuthOptions = {
         },
         password: { label: "Password", type: "password" },
       },
+
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
           return null;
@@ -50,12 +52,20 @@ export const authOptions: NextAuthOptions = {
           email: existingUser.email,
           name: existingUser.name,
           role: existingUser.role,
+          profileImage: existingUser.profileImage || undefined,
         };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      if (trigger === "update" && session) {
+        // Update the token when session is updated
+        token.name = session.user.name;
+        token.profileImage = session.user.profileImage;
+        return token;
+      }
+
       if (user) {
         return {
           ...token,
@@ -63,6 +73,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
+          profileImage: user.profileImage,
         };
       }
       return token;
@@ -76,6 +87,7 @@ export const authOptions: NextAuthOptions = {
           email: token.email,
           name: token.name,
           role: token.role,
+          profileImage: token.profileImage,
         },
       };
     },

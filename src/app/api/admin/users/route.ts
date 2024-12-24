@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { NextResponse } from "next/server";
 import { hash } from "bcryptjs";
 import * as z from "zod";
-import { Role } from "@prisma/client"; // Import the Role enum from Prisma
+import { Role, ExpertSpecialty } from "@prisma/client"; // Import the Role and ExpertSpecialty enums from Prisma
 
 const userSchema = z.object({
   name: z.string().nonempty("Nama tidak boleh kosong"),
@@ -14,15 +14,7 @@ const userSchema = z.object({
     .nonempty("Email tidak boleh kosong"),
   password: z.string().min(8, "Password minimal 8 karakter"),
   role: z.enum(["EXPERT", "USER"] as const),
-  specialty: z
-    .enum([
-      "CHILD_NUTRITION",
-      "CHILD_PSYCHOLOGY",
-      "PARENTING",
-      "CHILD_DEVELOPMENT",
-      "CHILD_EDUCATION",
-    ] as const)
-    .optional(),
+  specialty: z.nativeEnum(ExpertSpecialty).optional(),
   about: z.string().optional(),
   profileImage: z.string().optional(),
 });

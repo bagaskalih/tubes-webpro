@@ -146,7 +146,7 @@ export default function WithSubnavigation() {
                 <Center>
                   <Avatar
                     size={"2xl"}
-                    src={"https://avatars.dicebear.com/api/male/username.svg"}
+                    src={session.user.profileImage || undefined}
                   />
                 </Center>
                 <br />

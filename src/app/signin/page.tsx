@@ -23,6 +23,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 
 // Define the schema for validation using zod
 const FormSchema = z.object({
@@ -34,8 +35,24 @@ const FormSchema = z.object({
 });
 
 export default function SignInForm() {
-  const toast = useToast();
   const router = useRouter();
+  const session = useSession();
+
+  // Redirect to dashboard if user is already signed in
+  if (session.data) {
+    const userData = session.data?.user;
+    switch (userData.role) {
+      case "ADMIN":
+        router.push("/admin/dashboard");
+        break;
+      case "EXPERT":
+        router.push("/expert/dashboard");
+        break;
+      default:
+        router.push("/");
+    }
+  }
+  const toast = useToast();
   const [isLoading, setIsLoading] = useState(false); // Loading state for the form submission
   const {
     register,

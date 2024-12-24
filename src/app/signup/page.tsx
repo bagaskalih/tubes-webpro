@@ -23,6 +23,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 // Define the schema for validation using zod
 const FormSchema = z.object({
@@ -35,9 +36,14 @@ const FormSchema = z.object({
 });
 
 export default function SignUpForm() {
+  const router = useRouter();
+  const session = useSession();
+  if (session.data) {
+    router.push("/");
+  }
+
   const [isLoading, setIsLoading] = useState(false); // Loading state for the form submission
   const toast = useToast();
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
 
   // Initialize react-hook-form with zod resolver

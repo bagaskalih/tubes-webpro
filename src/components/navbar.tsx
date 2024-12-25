@@ -57,6 +57,10 @@ const NAV_ITEMS: Array<NavItem> = [
     label: "Forum",
     href: "/forum",
   },
+  {
+    label: "Konsultasi",
+    href: "/konsultasi",
+  },
 ];
 
 export default function WithSubnavigation() {

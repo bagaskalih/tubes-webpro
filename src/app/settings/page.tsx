@@ -1,9 +1,11 @@
+// src/app/settings/page.tsx
 "use client";
 
 import { useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
+  Box,
   Container,
   VStack,
   Heading,
@@ -30,13 +32,6 @@ const supabase = createClient(
   "https://ayvqagtjtkhriqwynupc.supabase.co",
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5dnFhZ3RqdGtocmlxd3ludXBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQxMTk3NjUsImV4cCI6MjA0OTY5NTc2NX0.aDbCCeWvxbQtHxDv9FbZaj7pyQL0wZ017aoBKcRBYLc"
 );
-
-interface ProfileUpdateData {
-  name?: string;
-  profileImage?: string;
-  currentPassword?: string;
-  newPassword?: string;
-}
 
 export default function SettingsPage() {
   const { data: session, update: updateSession } = useSession();
@@ -146,7 +141,12 @@ export default function SettingsPage() {
     }
   };
 
-  const updateProfile = async (data: ProfileUpdateData) => {
+  const updateProfile = async (data: {
+    profileImage?: string;
+    name?: string;
+    currentPassword?: string;
+    newPassword?: string;
+  }) => {
     try {
       const response = await fetch("/api/user/settings", {
         method: "PATCH",
@@ -181,7 +181,11 @@ export default function SettingsPage() {
     setErrors({});
 
     try {
-      const updateData: ProfileUpdateData = {};
+      const updateData: {
+        name?: string;
+        currentPassword?: string;
+        newPassword?: string;
+      } = {};
       if (name !== session?.user?.name) updateData.name = name;
       if (currentPassword && newPassword) {
         updateData.currentPassword = currentPassword;
@@ -211,12 +215,11 @@ export default function SettingsPage() {
     } catch (error) {
       console.error("Error updating profile:", error);
       setErrors({
-        submit: error instanceof Error ? error.message : String(error),
+        submit: (error as Error).message,
       });
       toast({
         title: "Gagal memperbarui profil",
-        description:
-          error instanceof Error ? error.message : "Terjadi kesalahan",
+        description: (error as Error).message,
         status: "error",
         duration: 3000,
       });

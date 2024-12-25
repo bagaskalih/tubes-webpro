@@ -19,6 +19,7 @@ import {
   useDisclosure,
   Icon,
   useToast,
+  Avatar,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
@@ -155,11 +156,10 @@ export default function KonsultasiDenganAhli() {
             _hover={{ boxShadow: "lg", cursor: "pointer" }}
             onClick={() => handleCardClick(expert)}
           >
-            <Image
-              borderRadius="full"
-              boxSize="75px"
+            <Avatar
+              size={"xl"}
+              name={expert.name}
               src={expert.profileImage || "https://via.placeholder.com/150"}
-              alt={expert.name}
             />
             <Box>
               <Text fontWeight={"bold"} fontSize={"lg"}>
@@ -187,14 +187,13 @@ export default function KonsultasiDenganAhli() {
             <ModalCloseButton />
             <ModalBody>
               <Flex direction={"column"} align={"center"} textAlign={"center"}>
-                <Image
-                  borderRadius="full"
-                  boxSize="150px"
+                <Avatar
+                  size={"xl"}
+                  name={selectedExpert.name}
                   src={
                     selectedExpert.profileImage ||
                     "https://via.placeholder.com/150"
                   }
-                  alt={selectedExpert.name}
                   mb={4}
                 />
                 <Text fontWeight={"bold"} fontSize={"lg"} mb={2}>

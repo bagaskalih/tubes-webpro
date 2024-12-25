@@ -12,20 +12,16 @@ import {
 
 const listLayanan = [
   {
-    title: "PANDUAN PARENTING",
-    link: "#",
-  },
-  {
-    title: "KONSULTASI DENGAN AHLI",
+    title: "Konsultasi Online Dengan Ahli",
     link: "konsultasi",
   },
   {
-    title: "FORUM KOMUNITAS",
+    title: "Forum Komunitas",
     link: "forum",
   },
   {
-    title: "AKSES BERITA TERKINI",
-    link: "news",
+    title: "Akses Artikel Terkini",
+    link: "artikel",
   },
 ];
 

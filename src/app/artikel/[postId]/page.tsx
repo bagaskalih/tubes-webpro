@@ -81,7 +81,6 @@ function NewsDetailContent({ postId }: { postId: string }) {
   const [comment, setComment] = useState("");
   const { data: session } = useSession();
   const toast = useToast();
-  const commentBgColor = useColorModeValue("gray.50", "gray.700");
 
   useEffect(() => {
     if (!postId) return;
@@ -92,6 +91,8 @@ function NewsDetailContent({ postId }: { postId: string }) {
     };
     fetchPost();
   }, [postId]);
+
+  console.log(post);
 
   const handleCommentSubmit = async () => {
     if (!session) {

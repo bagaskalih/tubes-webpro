@@ -55,9 +55,7 @@ export default async function AdminDashboard() {
                   <Users size={24} className="text-pink-500" />
                   <Heading size="md">Kelola Pengguna</Heading>
                 </Flex>
-                <Text color="gray.600">
-                  Tambah, edit, atau hapus akun pengguna dan pakar
-                </Text>
+                <Text color="gray.600">Tambah akun pengguna dan pakar</Text>
                 <Button
                   as={Link}
                   href="/admin/create-user"
@@ -82,11 +80,9 @@ export default async function AdminDashboard() {
               <Stack spacing={4}>
                 <Flex align="center" gap={3}>
                   <Edit3 size={24} className="text-purple-500" />
-                  <Heading size="md">Kelola Konten</Heading>
+                  <Heading size="md">Kelola Artikel</Heading>
                 </Flex>
-                <Text color="gray.600">
-                  Publish dan kelola artikel, panduan, dan materi edukasi
-                </Text>
+                <Text color="gray.600">Publish dan kelola artikel</Text>
                 <Button
                   as={Link}
                   href="/create-post"
@@ -95,7 +91,7 @@ export default async function AdminDashboard() {
                   rightIcon={<Edit3 size={20} />}
                   rounded="full"
                 >
-                  Kelola Konten
+                  Kelola Artikel
                 </Button>
               </Stack>
             </CardBody>

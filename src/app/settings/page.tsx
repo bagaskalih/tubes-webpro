@@ -1,4 +1,3 @@
-// src/app/settings/page.tsx
 "use client";
 
 import { useState, useRef } from "react";
@@ -81,8 +80,6 @@ export default function SettingsPage() {
 
     try {
       setIsLoading(true);
-
-      // Create unique file name
       const fileExt = file.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random()
         .toString(36)
@@ -96,14 +93,8 @@ export default function SettingsPage() {
           upsert: false,
         });
 
-      if (uploadError) {
-        console.error("Upload error:", uploadError);
-        throw new Error("Gagal mengunggah file");
-      }
-
-      if (!data) {
-        throw new Error("Tidak ada data yang diterima dari server");
-      }
+      if (uploadError) throw new Error("Gagal mengunggah file");
+      if (!data) throw new Error("Tidak ada data yang diterima dari server");
 
       // Get public URL
       const {
@@ -111,17 +102,24 @@ export default function SettingsPage() {
       } = supabase.storage.from("profile-images").getPublicUrl(fileName);
 
       // Update user profile with new image URL
-      await updateProfile({ image: publicUrl });
+      const result = await updateProfile({ image: publicUrl });
 
-      // Force a session refresh after image update
-      await updateSession();
-      router.refresh();
+      // Update session with the new image URL
+      await updateSession({
+        ...session,
+        user: {
+          ...session?.user,
+          image: publicUrl,
+        },
+      });
 
       toast({
         title: "Foto profil berhasil diperbarui",
         status: "success",
         duration: 3000,
       });
+
+      router.refresh();
     } catch (error) {
       console.error("Error uploading image:", error);
       toast({
@@ -133,7 +131,6 @@ export default function SettingsPage() {
       });
     } finally {
       setIsLoading(false);
-      // Reset file input
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -167,6 +164,9 @@ export default function SettingsPage() {
           image: result.user.image,
         },
       });
+
+      console.log("Profile updated:", result);
+      console.log("Session updated:", session);
 
       return result;
     } catch (error) {

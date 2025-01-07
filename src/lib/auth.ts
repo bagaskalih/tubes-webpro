@@ -1,5 +1,5 @@
 // lib/auth.ts
-import { NextAuthOptions } from "next-auth";
+import { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
@@ -109,7 +109,14 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      if (trigger === "update" && session) {
+        // Update the token when session is updated
+        token.name = session.user.name;
+        token.image = session.user.image;
+        return token;
+      }
+
       if (user) {
         token.id = user.id;
         token.role = user.role;

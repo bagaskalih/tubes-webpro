@@ -16,7 +16,7 @@ const userSchema = z.object({
   role: z.enum(["EXPERT", "USER"] as const),
   specialty: z.nativeEnum(ExpertSpecialty).optional(),
   about: z.string().optional(),
-  profileImage: z.string().optional(),
+  image: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { name, email, password, role, specialty, about, profileImage } =
+    const { name, email, password, role, specialty, about, image } =
       userSchema.parse(body);
     const existingUser = await db.user.findUnique({
       where: { email },
@@ -61,7 +61,7 @@ export async function POST(req: Request) {
         role,
         specialty,
         about,
-        profileImage,
+        image,
       },
     });
 
@@ -104,7 +104,7 @@ export async function GET() {
         role: true,
         specialty: true,
         about: true,
-        profileImage: true,
+        image: true,
         rating: true,
         totalReviews: true,
         createdAt: true,

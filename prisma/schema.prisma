@@ -36,13 +36,19 @@ enum ExpertSpecialty {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String
-  password  String
-  role      Role     @default(USER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
+  name          String
+  password      String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  emailVerified DateTime?
+  image         String? // Keep this for NextAuth compatibility
+
+  // NextAuth relations
+  accounts Account[]
+  sessions Session[]
 
   // Expert specific fields
   specialty    ExpertSpecialty?
@@ -50,7 +56,6 @@ model User {
   rating       Float?           @default(0)
   totalReviews Int?             @default(0)
   totalRatings Int?             @default(0)
-  profileImage String?
 
   // Chat relations
   sentMessages     Message[]  @relation("SentMessages")
@@ -68,6 +73,41 @@ model User {
   threads       Thread[]       @relation("ThreadAuthor")
   forumComments ForumComment[] @relation("ForumCommentAuthor")
   forumLikes    ForumLike[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            Int
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       Int
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
 // Chat model

@@ -66,6 +66,37 @@ export default function SignInForm() {
     },
   });
 
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    try {
+      const result = await signIn("google", {
+        callbackUrl: "/",
+        redirect: false,
+      });
+
+      if (result?.error) {
+        toast({
+          title: "Gagal masuk",
+          description: "Gagal masuk menggunakan Google",
+          status: "error",
+          isClosable: true,
+          position: "bottom-right",
+        });
+      }
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+      toast({
+        title: "Error",
+        description: "Terjadi kesalahan saat masuk dengan Google",
+        status: "error",
+        isClosable: true,
+        position: "bottom-right",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const onSubmit = async (values: z.infer<typeof FormSchema>) => {
     setIsLoading(true); // Start loading spinner
     const signInData = await signIn("credentials", {
@@ -173,7 +204,8 @@ export default function SignInForm() {
                 maxW={"md"}
                 variant={"outline"}
                 leftIcon={<FcGoogle />}
-                onClick={() => signIn("google")}
+                onClick={handleGoogleSignIn}
+                isLoading={isLoading}
               >
                 <Center>
                   <Text>Teruskan dengan Google</Text>

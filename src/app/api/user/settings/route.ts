@@ -10,12 +10,12 @@ const updateProfileSchema = z.object({
   name: z.string().optional(),
   currentPassword: z.string().optional(),
   newPassword: z.string().min(8, "Password minimal 8 karakter").optional(),
-  profileImage: z.string().optional(),
+  image: z.string().optional(),
 });
 
 interface ProfileUpdateFields {
   name?: string;
-  profileImage?: string;
+  image?: string;
 }
 
 export async function PATCH(req: Request) {
@@ -26,7 +26,7 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { name, currentPassword, newPassword, profileImage } =
+    const { name, currentPassword, newPassword, image } =
       updateProfileSchema.parse(body);
 
     const user = await db.user.findUnique({
@@ -39,7 +39,9 @@ export async function PATCH(req: Request) {
 
     // Handle password change
     if (currentPassword && newPassword) {
-      const passwordMatch = await compare(currentPassword, user.password);
+      const passwordMatch = user.password
+        ? await compare(currentPassword, user.password)
+        : false;
       if (!passwordMatch) {
         return NextResponse.json(
           { message: "Password saat ini tidak sesuai" },
@@ -56,7 +58,7 @@ export async function PATCH(req: Request) {
     // Handle profile update
     const updateData: ProfileUpdateFields = {};
     if (name) updateData.name = name;
-    if (profileImage) updateData.profileImage = profileImage;
+    if (image) updateData.image = image;
 
     const updatedUser = await db.user.update({
       where: { id: user.id },
@@ -65,7 +67,7 @@ export async function PATCH(req: Request) {
         id: true,
         name: true,
         email: true,
-        profileImage: true,
+        image: true,
         role: true,
       },
     });

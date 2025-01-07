@@ -49,7 +49,7 @@ const createUserSchema = z
     role: z.enum(["EXPERT", "USER"]),
     specialty: z.nativeEnum(ExpertSpecialty).optional(),
     about: z.string().optional(),
-    profileImage: z.string().optional(),
+    image: z.string().optional(),
   })
   .refine(
     (data) => {
@@ -226,14 +226,14 @@ export default function CreateUserForm() {
                       </FormErrorMessage>
                     </FormControl>
 
-                    <FormControl isInvalid={!!errors.profileImage}>
+                    <FormControl isInvalid={!!errors.image}>
                       <FormLabel>URL Foto Profil</FormLabel>
                       <Input
-                        {...register("profileImage")}
+                        {...register("image")}
                         placeholder="Masukkan URL foto profil"
                       />
                       <FormErrorMessage>
-                        {errors.profileImage?.message}
+                        {errors.image?.message}
                       </FormErrorMessage>
                     </FormControl>
                   </>

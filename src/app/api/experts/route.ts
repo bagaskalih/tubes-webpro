@@ -12,7 +12,7 @@ export async function GET() {
         name: true,
         specialty: true,
         about: true,
-        profileImage: true,
+        image: true,
         rating: true,
         totalReviews: true,
       },

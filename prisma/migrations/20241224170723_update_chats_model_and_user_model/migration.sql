@@ -34,7 +34,7 @@ ADD COLUMN     "receiverId" INTEGER NOT NULL;
 ALTER TABLE "User" DROP COLUMN "reviewCount",
 DROP COLUMN "specialistType",
 ADD COLUMN     "about" TEXT,
-ADD COLUMN     "profileImage" TEXT,
+ADD COLUMN     "image" TEXT,
 ADD COLUMN     "specialty" "ExpertSpecialty",
 ADD COLUMN     "totalRatings" INTEGER DEFAULT 0,
 ADD COLUMN     "totalReviews" INTEGER DEFAULT 0,

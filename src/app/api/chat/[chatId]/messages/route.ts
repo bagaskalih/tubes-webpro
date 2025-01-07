@@ -22,13 +22,13 @@ export async function GET(req: Request, { params }: RouteParams) {
         expert: {
           select: {
             name: true,
-            profileImage: true,
+            image: true,
           },
         },
         user: {
           select: {
             name: true,
-            profileImage: true,
+            image: true,
           },
         },
       },
@@ -50,7 +50,7 @@ export async function GET(req: Request, { params }: RouteParams) {
         sender: {
           select: {
             name: true,
-            profileImage: true,
+            image: true,
           },
         },
       },

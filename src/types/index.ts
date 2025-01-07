@@ -10,7 +10,7 @@ export interface User {
     | "PERKEMBANGAN_ANAK"
     | "EDUKASI_ANAK";
   about?: string;
-  profileImage?: string;
+  image?: string;
   rating?: number;
   totalReviews?: number;
   createdAt: string;

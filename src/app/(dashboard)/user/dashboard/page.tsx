@@ -24,7 +24,7 @@ async function getUserChats(userId: number) {
       expert: {
         select: {
           name: true,
-          profileImage: true,
+          image: true,
           specialty: true,
         },
       },
@@ -80,7 +80,7 @@ export default async function UserDashboard() {
                     <Avatar
                       size="sm"
                       name={chat.expert.name}
-                      src={chat.expert.profileImage ?? undefined}
+                      src={chat.expert.image ?? undefined}
                     />
                     <Box>
                       <Text fontWeight="bold">{chat.expert.name}</Text>

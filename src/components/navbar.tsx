@@ -140,18 +140,12 @@ export default function WithSubnavigation() {
                 cursor={"pointer"}
                 minW={0}
               >
-                <Avatar
-                  size={"sm"}
-                  src={session.user.profileImage || undefined}
-                />
+                <Avatar size={"sm"} src={session.user.image || undefined} />
               </MenuButton>
               <MenuList alignItems={"center"}>
                 <br />
                 <Center>
-                  <Avatar
-                    size={"2xl"}
-                    src={session.user.profileImage || undefined}
-                  />
+                  <Avatar size={"2xl"} src={session.user.image || undefined} />
                 </Center>
                 <br />
                 <Center>

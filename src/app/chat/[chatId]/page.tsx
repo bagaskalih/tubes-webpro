@@ -33,7 +33,7 @@ interface Message {
   createdAt: string;
   sender: {
     name: string;
-    profileImage: string;
+    image: string;
   };
 }
 
@@ -44,11 +44,11 @@ interface ChatRoom {
   status: "ACTIVE" | "RESOLVED";
   expert: {
     name: string;
-    profileImage: string;
+    image: string;
   };
   user: {
     name: string;
-    profileImage: string;
+    image: string;
   };
 }
 
@@ -206,9 +206,7 @@ function ChatRoomContent({ chatId }: { chatId: string }) {
               <HStack spacing={3}>
                 <Avatar
                   size="sm"
-                  src={
-                    isExpert ? room.user.profileImage : room.expert.profileImage
-                  }
+                  src={isExpert ? room.user.image : room.expert.image}
                   name={isExpert ? room.user.name : room.expert.name}
                 />
                 <Box>
@@ -231,11 +229,7 @@ function ChatRoomContent({ chatId }: { chatId: string }) {
         <HStack p={4} borderBottom="1px" borderColor={borderColor} spacing={4}>
           <Avatar
             size="sm"
-            src={
-              isExpert
-                ? chatRoom.user.profileImage
-                : chatRoom.expert.profileImage
-            }
+            src={isExpert ? chatRoom.user.image : chatRoom.expert.image}
             name={isExpert ? chatRoom.user.name : chatRoom.expert.name}
           />
           <Box flex="1">
@@ -272,7 +266,7 @@ function ChatRoomContent({ chatId }: { chatId: string }) {
                 >
                   <Avatar
                     size="xs"
-                    src={message.sender.profileImage}
+                    src={message.sender.image}
                     name={message.sender.name}
                   />
                   <Box>

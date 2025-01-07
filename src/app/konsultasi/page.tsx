@@ -6,7 +6,6 @@ import {
   Heading,
   Stack,
   Text,
-  Image,
   useColorModeValue,
   Modal,
   ModalOverlay,
@@ -31,7 +30,7 @@ interface Expert {
   name: string;
   specialty: string;
   about: string;
-  profileImage: string;
+  image: string;
   rating: number;
   totalReviews: number;
 }
@@ -159,7 +158,7 @@ export default function KonsultasiDenganAhli() {
             <Avatar
               size={"xl"}
               name={expert.name}
-              src={expert.profileImage || "https://via.placeholder.com/150"}
+              src={expert.image || "https://via.placeholder.com/150"}
             />
             <Box>
               <Text fontWeight={"bold"} fontSize={"lg"}>
@@ -191,8 +190,7 @@ export default function KonsultasiDenganAhli() {
                   size={"xl"}
                   name={selectedExpert.name}
                   src={
-                    selectedExpert.profileImage ||
-                    "https://via.placeholder.com/150"
+                    selectedExpert.image || "https://via.placeholder.com/150"
                   }
                   mb={4}
                 />

@@ -22,13 +22,13 @@ export async function GET() {
         expert: {
           select: {
             name: true,
-            profileImage: true,
+            image: true,
           },
         },
         user: {
           select: {
             name: true,
-            profileImage: true,
+            image: true,
           },
         },
       },

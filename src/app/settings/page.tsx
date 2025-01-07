@@ -5,7 +5,6 @@ import { useState, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
-  Box,
   Container,
   VStack,
   Heading,
@@ -112,7 +111,7 @@ export default function SettingsPage() {
       } = supabase.storage.from("profile-images").getPublicUrl(fileName);
 
       // Update user profile with new image URL
-      await updateProfile({ profileImage: publicUrl });
+      await updateProfile({ image: publicUrl });
 
       // Force a session refresh after image update
       await updateSession();
@@ -142,7 +141,7 @@ export default function SettingsPage() {
   };
 
   const updateProfile = async (data: {
-    profileImage?: string;
+    image?: string;
     name?: string;
     currentPassword?: string;
     newPassword?: string;
@@ -165,7 +164,7 @@ export default function SettingsPage() {
         user: {
           ...session?.user,
           name: result.user.name,
-          profileImage: result.user.profileImage,
+          image: result.user.image,
         },
       });
 
@@ -247,7 +246,7 @@ export default function SettingsPage() {
             <VStack textAlign="center">
               <Avatar
                 size="2xl"
-                src={session.user.profileImage}
+                src={session.user.image}
                 name={session.user.name}
                 mb={4}
               />

@@ -1,8 +1,20 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { Box, Button, Heading, Stack } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Card,
+  CardBody,
+  Container,
+  Flex,
+  Grid,
+  Heading,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import Link from "next/link";
+import { Users, Edit3 } from "lucide-react";
 
 export default async function AdminDashboard() {
   const session = await getServerSession(authOptions);
@@ -12,28 +24,84 @@ export default async function AdminDashboard() {
   }
 
   return (
-    <Box maxW="4xl" mx="auto" py={8} px={4}>
-      <Stack spacing={6}>
-        <Heading>Admin Dashboard</Heading>
-        <Stack direction="row" spacing={4}>
-          <Button
-            as={Link}
-            href="/admin/create-user"
-            colorScheme="blue"
-            width="fit-content"
+    <Container maxW="7xl" py={8}>
+      <Stack spacing={8}>
+        <Box textAlign="center" mb={8}>
+          <Heading
+            as="h1"
+            fontSize="4xl"
+            fontWeight="bold"
+            bgGradient="linear(to-r, pink.500, purple.500)"
+            bgClip="text"
+            mb={4}
           >
-            Kelola Pengguna
-          </Button>
-          <Button
-            as={Link}
-            href="/create-post"
-            colorScheme="green"
-            width="fit-content"
+            Panel Admin
+          </Heading>
+          <Text fontSize="xl" color="gray.600" maxW="2xl" mx="auto">
+            Kelola pengguna dan konten Portal Online Orangtua Pintar
+          </Text>
+        </Box>
+
+        <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
+          <Card
+            variant="outline"
+            borderColor="gray.200"
+            _hover={{ borderColor: "pink.200", shadow: "md" }}
+            transition="all 0.2s"
           >
-            Publish Artikel Baru
-          </Button>
-        </Stack>
+            <CardBody>
+              <Stack spacing={4}>
+                <Flex align="center" gap={3}>
+                  <Users size={24} className="text-pink-500" />
+                  <Heading size="md">Kelola Pengguna</Heading>
+                </Flex>
+                <Text color="gray.600">
+                  Tambah, edit, atau hapus akun pengguna dan pakar
+                </Text>
+                <Button
+                  as={Link}
+                  href="/admin/create-user"
+                  colorScheme="pink"
+                  size="lg"
+                  rightIcon={<Users size={20} />}
+                  rounded="full"
+                >
+                  Kelola Pengguna
+                </Button>
+              </Stack>
+            </CardBody>
+          </Card>
+
+          <Card
+            variant="outline"
+            borderColor="gray.200"
+            _hover={{ borderColor: "purple.200", shadow: "md" }}
+            transition="all 0.2s"
+          >
+            <CardBody>
+              <Stack spacing={4}>
+                <Flex align="center" gap={3}>
+                  <Edit3 size={24} className="text-purple-500" />
+                  <Heading size="md">Kelola Konten</Heading>
+                </Flex>
+                <Text color="gray.600">
+                  Publish dan kelola artikel, panduan, dan materi edukasi
+                </Text>
+                <Button
+                  as={Link}
+                  href="/create-post"
+                  colorScheme="purple"
+                  size="lg"
+                  rightIcon={<Edit3 size={20} />}
+                  rounded="full"
+                >
+                  Kelola Konten
+                </Button>
+              </Stack>
+            </CardBody>
+          </Card>
+        </Grid>
       </Stack>
-    </Box>
+    </Container>
   );
 }

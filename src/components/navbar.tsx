@@ -22,6 +22,7 @@ import {
   Avatar,
   Center,
   MenuDivider,
+  Spacer,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -87,7 +88,7 @@ export default function WithSubnavigation() {
 
   return (
     <Box>
-      <Flex minH={"72px"} py={4} align={"center"} justify={"space-between"}>
+      <Flex minH={"72px"} py={4} align={"center"}>
         <Flex
           flex={{ base: 1, md: "auto" }}
           ml={{ base: -2 }}
@@ -102,7 +103,6 @@ export default function WithSubnavigation() {
             aria-label={"Toggle Navigation"}
           />
         </Flex>
-
         <Link href="/" passHref>
           <Text
             fontSize={"xl"}
@@ -113,10 +113,11 @@ export default function WithSubnavigation() {
             Portal Online Orangtua Pintar
           </Text>
         </Link>
-
         <Flex display={{ base: "none", md: "flex" }} ml={10}>
           <DesktopNav />
         </Flex>
+
+        <Spacer />
 
         <Stack
           flex={{ base: 1, md: 0 }}

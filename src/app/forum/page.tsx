@@ -9,8 +9,6 @@ import {
   Select,
   Button,
   Stack,
-  Card,
-  CardBody,
   Text,
   Badge,
   HStack,
@@ -35,7 +33,6 @@ import { subtitle } from "@/components/primitives";
 import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
 import { MessageCircle, User, Clock } from "lucide-react";
-import { title } from "process";
 
 const ForumPage = () => {
   const { data: session } = useSession();

@@ -11,9 +11,6 @@ import {
   Select,
   useToast,
   FormErrorMessage,
-  Card,
-  CardHeader,
-  CardBody,
   Heading,
   Table,
   Thead,
@@ -21,8 +18,8 @@ import {
   Tr,
   Th,
   Td,
-  TableContainer,
   Textarea,
+  Container,
 } from "@chakra-ui/react";
 import { z } from "zod";
 import { useForm, useWatch } from "react-hook-form";
@@ -157,30 +154,57 @@ export default function CreateUserForm() {
   };
 
   return (
-    <Box maxW="6xl" mx="auto" py={8} px={4}>
+    <Container maxW="7xl" py={8}>
       <Stack spacing={8}>
-        <Card>
-          <CardHeader>
-            <Heading size="lg">Buat Akun Baru</Heading>
-          </CardHeader>
-          <CardBody>
+        <Box
+          bg="white"
+          shadow="sm"
+          rounded="xl"
+          borderWidth="1px"
+          borderColor="gray.200"
+        >
+          <Box px={6} py={5} borderBottomWidth="1px">
+            <Heading
+              size="lg"
+              bgGradient="linear(to-r, pink.500, purple.500)"
+              bgClip="text"
+            >
+              Buat Akun Baru
+            </Heading>
+          </Box>
+
+          <Box px={6} py={6}>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Stack spacing={4}>
+              <Stack spacing={6}>
                 <FormControl isInvalid={!!errors.name}>
                   <FormLabel>Nama</FormLabel>
-                  <Input {...register("name")} />
+                  <Input
+                    {...register("name")}
+                    focusBorderColor="pink.500"
+                    _hover={{ borderColor: "gray.300" }}
+                  />
                   <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.email}>
                   <FormLabel>Email</FormLabel>
-                  <Input type="email" {...register("email")} />
+                  <Input
+                    type="email"
+                    {...register("email")}
+                    focusBorderColor="pink.500"
+                    _hover={{ borderColor: "gray.300" }}
+                  />
                   <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
                 </FormControl>
 
                 <FormControl isInvalid={!!errors.password}>
                   <FormLabel>Password</FormLabel>
-                  <Input type="password" {...register("password")} />
+                  <Input
+                    type="password"
+                    {...register("password")}
+                    focusBorderColor="pink.500"
+                    _hover={{ borderColor: "gray.300" }}
+                  />
                   <FormErrorMessage>
                     {errors.password?.message}
                   </FormErrorMessage>
@@ -188,7 +212,11 @@ export default function CreateUserForm() {
 
                 <FormControl isInvalid={!!errors.role}>
                   <FormLabel>Role</FormLabel>
-                  <Select {...register("role")}>
+                  <Select
+                    {...register("role")}
+                    focusBorderColor="pink.500"
+                    _hover={{ borderColor: "gray.300" }}
+                  >
                     <option value="USER">User</option>
                     <option value="EXPERT">Expert</option>
                   </Select>
@@ -196,10 +224,14 @@ export default function CreateUserForm() {
                 </FormControl>
 
                 {role === "EXPERT" && (
-                  <>
+                  <Stack spacing={6}>
                     <FormControl isInvalid={!!errors.specialty}>
                       <FormLabel>Bidang Keahlian</FormLabel>
-                      <Select {...register("specialty")}>
+                      <Select
+                        {...register("specialty")}
+                        focusBorderColor="pink.500"
+                        _hover={{ borderColor: "gray.300" }}
+                      >
                         <option value="">Pilih Bidang Keahlian</option>
                         {Object.entries(specialtyLabels).map(
                           ([value, label]) => (
@@ -218,8 +250,10 @@ export default function CreateUserForm() {
                       <FormLabel>Tentang</FormLabel>
                       <Textarea
                         {...register("about")}
-                        placeholder="Masukkan deskripsi tentang keahlian dan pengalaman Anda"
                         rows={4}
+                        focusBorderColor="pink.500"
+                        _hover={{ borderColor: "gray.300" }}
+                        placeholder="Masukkan deskripsi tentang keahlian dan pengalaman Anda"
                       />
                       <FormErrorMessage>
                         {errors.about?.message}
@@ -230,66 +264,80 @@ export default function CreateUserForm() {
                       <FormLabel>URL Foto Profil</FormLabel>
                       <Input
                         {...register("image")}
+                        focusBorderColor="pink.500"
+                        _hover={{ borderColor: "gray.300" }}
                         placeholder="Masukkan URL foto profil"
                       />
                       <FormErrorMessage>
                         {errors.image?.message}
                       </FormErrorMessage>
                     </FormControl>
-                  </>
+                  </Stack>
                 )}
 
                 <Button
-                  mt={4}
-                  colorScheme="blue"
                   type="submit"
+                  colorScheme="pink"
                   isLoading={isSubmitting}
+                  rounded="full"
+                  size="lg"
                 >
                   Buat Akun
                 </Button>
               </Stack>
             </form>
-          </CardBody>
-        </Card>
+          </Box>
+        </Box>
 
-        <Card>
-          <CardHeader>
-            <Heading size="lg">Daftar Pengguna</Heading>
-          </CardHeader>
-          <CardBody>
-            <TableContainer>
-              <Table variant="simple">
-                <Thead>
-                  <Tr>
-                    <Th>Nama</Th>
-                    <Th>Email</Th>
-                    <Th>Role</Th>
-                    <Th>Bidang Keahlian</Th>
-                    <Th>Tanggal Dibuat</Th>
+        <Box
+          bg="white"
+          shadow="sm"
+          rounded="xl"
+          borderWidth="1px"
+          borderColor="gray.200"
+        >
+          <Box px={6} py={5} borderBottomWidth="1px">
+            <Heading
+              size="lg"
+              bgGradient="linear(to-r, pink.500, purple.500)"
+              bgClip="text"
+            >
+              Daftar Pengguna
+            </Heading>
+          </Box>
+
+          <Box px={6} py={6} overflowX="auto">
+            <Table variant="simple">
+              <Thead>
+                <Tr>
+                  <Th>Nama</Th>
+                  <Th>Email</Th>
+                  <Th>Role</Th>
+                  <Th>Bidang Keahlian</Th>
+                  <Th>Tanggal Dibuat</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {users.map((user) => (
+                  <Tr key={user.id}>
+                    <Td>{user.name}</Td>
+                    <Td>{user.email}</Td>
+                    <Td>{user.role}</Td>
+                    <Td>
+                      {user.specialty
+                        ? specialtyLabels[user.specialty as ExpertSpecialty]
+                        : "-"}
+                    </Td>
+                    <Td>
+                      {new Date(user.createdAt).toLocaleDateString("id-ID")}
+                    </Td>
                   </Tr>
-                </Thead>
-                <Tbody>
-                  {users.map((user) => (
-                    <Tr key={user.id}>
-                      <Td>{user.name}</Td>
-                      <Td>{user.email}</Td>
-                      <Td>{user.role}</Td>
-                      <Td>
-                        {user.specialty
-                          ? specialtyLabels[user.specialty as ExpertSpecialty]
-                          : "-"}
-                      </Td>
-                      <Td>
-                        {new Date(user.createdAt).toLocaleDateString("id-ID")}
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </TableContainer>
-          </CardBody>
-        </Card>
+                ))}
+              </Tbody>
+            </Table>
+          </Box>
+        </Box>
       </Stack>
-    </Box>
+    </Container>
   );
 }

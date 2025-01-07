@@ -3,10 +3,8 @@
 import { useEffect, useState, use } from "react";
 import { Thread } from "@/types/forum";
 import {
-  Box,
   Container,
   Heading,
-  Stack,
   Text,
   Button,
   Card,
@@ -25,6 +23,9 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  Avatar,
+  useColorModeValue,
+  VStack,
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -59,10 +60,15 @@ function ThreadContent({ threadId }: { threadId: string }) {
   const { data: session } = useSession();
   const router = useRouter();
   const toast = useToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const [thread, setThread] = useState<Thread | null>(null);
   const [newComment, setNewComment] = useState("");
   const [loading, setLoading] = useState(false);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const bgColor = useColorModeValue("white", "gray.800");
+  const textColor = useColorModeValue("gray.600", "gray.300");
+  const cardBg = useColorModeValue("gray.50", "gray.700");
 
   useEffect(() => {
     if (!threadId) return;
@@ -199,78 +205,125 @@ function ThreadContent({ threadId }: { threadId: string }) {
 
   return (
     <Container maxW="container.xl" py={8}>
-      <Stack spacing={6}>
-        <Box>
-          <HStack justify="space-between" align="start">
-            <Stack>
-              <Heading size="lg">{thread.title}</Heading>
-              <HStack>
-                <Badge colorScheme="blue">{thread.category}</Badge>
-                <Text fontSize="sm">
-                  by {thread.author.name} ({thread.author.role})
-                </Text>
-              </HStack>
-            </Stack>
-            {session?.user.role === "ADMIN" && (
-              <IconButton
-                aria-label="Delete thread"
-                icon={<FaTrash />}
-                colorScheme="red"
-                onClick={onOpen}
-              />
-            )}
-          </HStack>
-          <Text mt={4}>{thread.content}</Text>
-        </Box>
+      <VStack spacing={6} align="stretch">
+        {/* Thread Header */}
+        <Card bg={bgColor} borderRadius="xl" shadow="sm">
+          <CardBody>
+            <HStack justify="space-between" align="start">
+              <VStack align="start" spacing={4}>
+                <Heading size="lg">{thread.title}</Heading>
+                <HStack spacing={4}>
+                  <Badge
+                    colorScheme="pink"
+                    px={3}
+                    py={1}
+                    borderRadius="full"
+                    textTransform="none"
+                  >
+                    {thread.category}
+                  </Badge>
+                  <HStack spacing={2}>
+                    <Avatar
+                      size="sm"
+                      name={thread.author.name}
+                      src={thread.author.image}
+                    />
+                    <Text fontSize="sm" color={textColor}>
+                      {thread.author.name} • {thread.author.role}
+                    </Text>
+                  </HStack>
+                </HStack>
+              </VStack>
+              {session?.user.role === "ADMIN" && (
+                <IconButton
+                  aria-label="Delete thread"
+                  icon={<FaTrash />}
+                  colorScheme="red"
+                  variant="ghost"
+                  onClick={onOpen}
+                />
+              )}
+            </HStack>
+            <Text mt={6} color={textColor}>
+              {thread.content}
+            </Text>
+          </CardBody>
+        </Card>
 
         <Divider />
 
-        <Box>
-          <Heading size="md" mb={4}>
-            Komentar
-          </Heading>
+        {/* Comments Section */}
+        <VStack spacing={6} align="stretch">
+          <Heading size="md">Komentar</Heading>
 
-          <form onSubmit={handleAddComment}>
-            <Stack spacing={4}>
-              <Textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder={
-                  session
-                    ? "Tulis komentar..."
-                    : "Silakan masuk untuk menulis komentar"
-                }
-                disabled={!session}
-              />
-              <Button
-                type="submit"
-                colorScheme="blue"
-                isLoading={loading}
-                disabled={!session}
-                alignSelf="flex-end"
-              >
-                Kirim
-              </Button>
-            </Stack>
-          </form>
+          {/* Comment Form */}
+          <Card bg={bgColor} borderRadius="xl" shadow="sm">
+            <CardBody>
+              <form onSubmit={handleAddComment}>
+                <VStack spacing={4}>
+                  <Textarea
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder={
+                      session
+                        ? "Tulis komentar..."
+                        : "Silakan masuk untuk menulis komentar"
+                    }
+                    disabled={!session}
+                    size="md"
+                    borderRadius="xl"
+                    focusBorderColor="pink.500"
+                    bg={cardBg}
+                    _hover={{ borderColor: "pink.400" }}
+                  />
+                  <Button
+                    type="submit"
+                    colorScheme="pink"
+                    isLoading={loading}
+                    disabled={!session}
+                    alignSelf="flex-end"
+                    borderRadius="full"
+                    px={6}
+                  >
+                    Kirim
+                  </Button>
+                </VStack>
+              </form>
+            </CardBody>
+          </Card>
 
-          <Stack spacing={4} mt={6}>
+          {/* Comments List */}
+          <VStack spacing={4}>
             {thread.comments.map((comment) => (
-              <Card key={comment.id}>
+              <Card
+                key={comment.id}
+                w="full"
+                bg={bgColor}
+                borderRadius="xl"
+                shadow="sm"
+              >
                 <CardBody>
-                  <Stack spacing={2}>
+                  <VStack align="stretch" spacing={4}>
                     <HStack justify="space-between">
-                      <Text fontSize="sm">
-                        {comment.author.name} (
-                        {comment.author.role === "EXPERT"
-                          ? "Ahli " +
-                            specialtyLabels[
-                              comment.author.specialty as ExpertSpecialty
-                            ]
-                          : comment.author.role}
-                        )
-                      </Text>
-                      <HStack>
+                      <HStack spacing={3}>
+                        <Avatar
+                          size="sm"
+                          name={comment.author.name}
+                          src={comment.author.image}
+                        />
+                        <VStack align="start" spacing={0}>
+                          <Text fontWeight="medium">{comment.author.name}</Text>
+                          <Text fontSize="sm" color="pink.500">
+                            {comment.author.role === "EXPERT"
+                              ? "Ahli " +
+                                specialtyLabels[
+                                  comment.author.specialty as ExpertSpecialty
+                                ]
+                              : comment.author.role}
+                          </Text>
+                        </VStack>
+                      </HStack>
+                      <HStack spacing={2}>
                         <IconButton
                           aria-label="Like"
                           icon={<FaThumbsUp />}
@@ -279,8 +332,11 @@ function ThreadContent({ threadId }: { threadId: string }) {
                           colorScheme={
                             comment.userLike?.type === "LIKE" ? "blue" : "gray"
                           }
+                          variant="ghost"
                         />
-                        <Text>{comment._count.likes}</Text>
+                        <Text fontSize="sm" fontWeight="medium">
+                          {comment._count.likes}
+                        </Text>
                         <IconButton
                           aria-label="Dislike"
                           icon={<FaThumbsDown />}
@@ -291,21 +347,23 @@ function ThreadContent({ threadId }: { threadId: string }) {
                               ? "red"
                               : "gray"
                           }
+                          variant="ghost"
                         />
                       </HStack>
                     </HStack>
-                    <Text>{comment.content}</Text>
-                  </Stack>
+                    <Text color={textColor}>{comment.content}</Text>
+                  </VStack>
                 </CardBody>
               </Card>
             ))}
-          </Stack>
-        </Box>
-      </Stack>
+          </VStack>
+        </VStack>
+      </VStack>
 
+      {/* Delete Modal */}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
-        <ModalContent>
+        <ModalContent borderRadius="xl">
           <ModalHeader>Delete Thread</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -313,7 +371,7 @@ function ThreadContent({ threadId }: { threadId: string }) {
             undone.
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="gray" mr={3} onClick={onClose}>
+            <Button variant="ghost" mr={3} onClick={onClose}>
               Cancel
             </Button>
             <Button colorScheme="red" onClick={handleDeleteThread}>

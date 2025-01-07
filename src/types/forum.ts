@@ -3,6 +3,7 @@ export interface User {
   name: string;
   role: "USER" | "ADMIN" | "EXPERT";
   specialty?: string;
+  image?: string;
 }
 
 export interface Comment {
@@ -25,6 +26,7 @@ export interface Thread {
   author: {
     name: string;
     role: string;
+    image?: string;
   };
   comments: Comment[];
   _count: {

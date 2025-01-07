@@ -21,6 +21,10 @@ import {
   InputGroup,
   InputRightElement,
   IconButton,
+  AvatarBadge,
+  Box,
+  Center,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { createClient } from "@supabase/supabase-js";
@@ -38,19 +42,21 @@ export default function SettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState(session?.user?.name || "");
-
-  // Keep name in sync with session
-  useEffect(() => {
-    if (session?.user?.name) {
-      setName(session.user.name);
-    }
-  }, [session?.user?.name]);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  useEffect(() => {
+    if (session?.user?.name) {
+      setName(session.user.name);
+    }
+  }, [session?.user?.name]);
+
+  const bgColor = useColorModeValue("white", "gray.800");
+  const borderColor = useColorModeValue("gray.200", "gray.700");
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -102,7 +108,7 @@ export default function SettingsPage() {
       } = supabase.storage.from("profile-images").getPublicUrl(fileName);
 
       // Update user profile with new image URL
-      const result = await updateProfile({ image: publicUrl });
+      await updateProfile({ image: publicUrl });
 
       // Update session with the new image URL
       await updateSession({
@@ -185,6 +191,7 @@ export default function SettingsPage() {
         currentPassword?: string;
         newPassword?: string;
       } = {};
+
       if (name !== session?.user?.name) updateData.name = name;
       if (currentPassword && newPassword) {
         updateData.currentPassword = currentPassword;
@@ -208,14 +215,13 @@ export default function SettingsPage() {
         duration: 3000,
       });
 
-      // Reset password fields
       setCurrentPassword("");
       setNewPassword("");
+      await updateSession();
+      router.refresh();
     } catch (error) {
       console.error("Error updating profile:", error);
-      setErrors({
-        submit: (error as Error).message,
-      });
+      setErrors({ submit: (error as Error).message });
       toast({
         title: "Gagal memperbarui profil",
         description: (error as Error).message,
@@ -225,10 +231,6 @@ export default function SettingsPage() {
     } finally {
       setIsLoading(false);
     }
-
-    // Force a session refresh after successful update
-    await updateSession();
-    router.refresh();
   };
 
   if (!session) {
@@ -238,59 +240,98 @@ export default function SettingsPage() {
 
   return (
     <Container maxW="container.md" py={8}>
-      <Card>
+      <Card
+        bg={bgColor}
+        borderRadius="xl"
+        boxShadow="sm"
+        borderWidth="1px"
+        borderColor={borderColor}
+      >
         <CardBody>
-          <VStack spacing={6} align="stretch">
+          <VStack spacing={8} align="stretch">
             <Heading size="lg">Pengaturan Akun</Heading>
 
-            <VStack textAlign="center">
-              <Avatar
-                size="2xl"
-                src={session.user.image}
-                name={session.user.name}
-                mb={4}
-              />
-              <Button
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                isLoading={isLoading}
-              >
-                Ganti Foto Profil
-              </Button>
-              <input
-                type="file"
-                ref={fileInputRef}
-                hidden
-                accept="image/*"
-                onChange={handleImageUpload}
-              />
-            </VStack>
+            {/* Profile Image Section */}
+            <Center>
+              <Box position="relative">
+                <Avatar
+                  size="2xl"
+                  src={session.user.image}
+                  name={session.user.name}
+                >
+                  <AvatarBadge
+                    as={IconButton}
+                    size="sm"
+                    rounded="full"
+                    top="-12px"
+                    colorScheme="pink"
+                    aria-label="Edit Profile Picture"
+                    icon={
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    }
+                    onClick={() => fileInputRef.current?.click()}
+                  />
+                </Avatar>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  hidden
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                />
+              </Box>
+            </Center>
+
+            <Text fontSize="sm" color="gray.500" textAlign="center">
+              Unggah foto profil baru
+            </Text>
 
             <Divider />
 
+            {/* Form Section */}
             <form onSubmit={handleSubmit}>
-              <VStack spacing={4}>
+              <VStack spacing={6}>
+                {/* Name Field */}
                 <FormControl isInvalid={!!errors.name}>
                   <FormLabel>Nama</FormLabel>
                   <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Masukkan nama baru"
+                    size="lg"
+                    borderRadius="xl"
+                    focusBorderColor="pink.500"
                   />
                   <FormErrorMessage>{errors.name}</FormErrorMessage>
                 </FormControl>
 
+                {/* Current Password Field */}
                 <FormControl isInvalid={!!errors.currentPassword}>
                   <FormLabel>Password Saat Ini</FormLabel>
-                  <InputGroup>
+                  <InputGroup size="lg">
                     <Input
                       type={showCurrentPassword ? "text" : "password"}
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       placeholder="Masukkan password saat ini"
+                      borderRadius="xl"
+                      focusBorderColor="pink.500"
                     />
                     <InputRightElement>
                       <IconButton
+                        variant="ghost"
                         aria-label={
                           showCurrentPassword
                             ? "Hide password"
@@ -302,30 +343,32 @@ export default function SettingsPage() {
                         onClick={() =>
                           setShowCurrentPassword(!showCurrentPassword)
                         }
-                        variant="ghost"
                       />
                     </InputRightElement>
                   </InputGroup>
                   <FormErrorMessage>{errors.currentPassword}</FormErrorMessage>
                 </FormControl>
 
+                {/* New Password Field */}
                 <FormControl isInvalid={!!errors.newPassword}>
                   <FormLabel>Password Baru</FormLabel>
-                  <InputGroup>
+                  <InputGroup size="lg">
                     <Input
                       type={showNewPassword ? "text" : "password"}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="Masukkan password baru"
+                      borderRadius="xl"
+                      focusBorderColor="pink.500"
                     />
                     <InputRightElement>
                       <IconButton
+                        variant="ghost"
                         aria-label={
                           showNewPassword ? "Hide password" : "Show password"
                         }
                         icon={showNewPassword ? <ViewOffIcon /> : <ViewIcon />}
                         onClick={() => setShowNewPassword(!showNewPassword)}
-                        variant="ghost"
                       />
                     </InputRightElement>
                   </InputGroup>
@@ -340,11 +383,14 @@ export default function SettingsPage() {
 
                 <Button
                   type="submit"
-                  colorScheme="blue"
+                  colorScheme="pink"
+                  size="lg"
                   isLoading={isLoading}
-                  w="full"
+                  width="full"
+                  borderRadius="full"
+                  fontSize="md"
                 >
-                  Simpan Perubahan
+                  {isLoading ? "Menyimpan..." : "Simpan Perubahan"}
                 </Button>
               </VStack>
             </form>

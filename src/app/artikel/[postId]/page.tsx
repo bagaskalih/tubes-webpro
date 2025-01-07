@@ -23,6 +23,7 @@ interface Author {
   name: string;
   role: string;
   specialty?: ExpertSpecialty;
+  image: string;
 }
 
 enum ExpertSpecialty {
@@ -139,101 +140,111 @@ function NewsDetailContent({ postId }: { postId: string }) {
   if (!post) return null;
 
   return (
-    <Container maxW="container.md" py={8}>
-      <Stack spacing={8}>
+    <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="space-y-8">
         {post.image && (
-          <Image
-            src={post.image}
-            alt={post.title}
-            width="100%"
-            height="400px"
-            objectFit="cover"
-            borderRadius="lg"
-          />
+          <div className="relative h-[400px] w-full overflow-hidden rounded-xl">
+            <Image
+              src={post.image}
+              alt={post.title}
+              objectFit="cover"
+              width="100%"
+              height="100%"
+            />
+          </div>
         )}
 
-        <Stack spacing={4}>
-          <Heading size="2xl">{post.title}</Heading>
+        <div className="space-y-6">
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+            {post.title}
+          </h1>
 
-          <Stack direction="row" spacing={4} align="center">
-            <Avatar size="md" />
-            <Stack direction="column" spacing={0}>
-              <Text fontWeight={600}>{post.author.name}</Text>
-              <Text color="gray.500">
+          <div className="flex items-center space-x-4">
+            <Avatar size="md" src={post.author.image} name={post.author.name} />
+            <div className="space-y-1">
+              <p className="font-semibold text-gray-900">{post.author.name}</p>
+              <p className="text-sm text-gray-500">
                 {formatDistanceToNow(new Date(post.createdAt), {
                   addSuffix: true,
                   locale: id,
                 })}
-              </Text>
-            </Stack>
-          </Stack>
-        </Stack>
+              </p>
+            </div>
+          </div>
+        </div>
 
-        <Text fontSize="lg" whiteSpace="pre-wrap" textAlign="justify">
-          {post.content}
-        </Text>
+        <article className="prose prose-lg max-w-none">{post.content}</article>
 
-        <Divider my={8} />
+        <hr className="border-t border-gray-200 my-12" />
 
-        {/* comment form if logged in */}
-        {session && (
-          <Stack spacing={4}>
-            <Textarea
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              placeholder="Tulis komentar..."
-              size="sm"
-            />
-            <Button
-              colorScheme="blue"
-              onClick={handleCommentSubmit}
-              alignSelf="flex-end"
-            >
-              Kirim Komentar
-            </Button>
-          </Stack>
-        )}
+        <div className="space-y-8">
+          {session ? (
+            <div className="space-y-4">
+              <Textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                placeholder="Tulis komentar..."
+                className="w-full rounded-xl border-gray-200 focus:border-pink-500 focus:ring-pink-500"
+              />
+              <Button
+                onClick={handleCommentSubmit}
+                className="ml-auto bg-pink-500 hover:bg-pink-600 text-white rounded-full px-6 py-2"
+              >
+                Kirim Komentar
+              </Button>
+            </div>
+          ) : (
+            <div className="bg-gray-50 rounded-xl p-6">
+              <p className="text-gray-600">
+                Silakan masuk terlebih dahulu untuk menambahkan komentar.
+              </p>
+            </div>
+          )}
 
-        {!session && (
-          <Box p={4} borderRadius="md" bg={commentBgColor}>
-            <Text>
-              Silakan masuk terlebih dahulu untuk menambahkan komentar.
-            </Text>
-          </Box>
-        )}
-
-        <Stack spacing={8}>
-          <Heading size="md">Komentar ({post.comments.length})</Heading>
-          {post.comments.map((comment) => (
-            <Box key={comment.id} p={4} borderRadius="md" bg={commentBgColor}>
-              <Stack direction="row" spacing={4}>
-                <Avatar size="sm" />
-                <Stack flex={1} spacing={2}>
-                  <Stack direction="row" align="center" spacing={2}>
-                    <Text fontWeight={600}>{comment.author.name}</Text>
-                    <Text fontSize="sm" color="gray.500">
-                      {comment.author.specialty
-                        ? "Ahli " +
-                          expertSpecialtyLabel[
-                            post.author
-                              .specialty as unknown as ExpertSpecialtyType
-                          ]
-                        : "Pengguna"}
-                    </Text>
-                  </Stack>
-                  <Text>{comment.content}</Text>
-                  <Text fontSize="sm" color="gray.500">
-                    {formatDistanceToNow(new Date(comment.createdAt), {
-                      addSuffix: true,
-                      locale: id,
-                    })}
-                  </Text>
-                </Stack>
-              </Stack>
-            </Box>
-          ))}
-        </Stack>
-      </Stack>
-    </Container>
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Komentar ({post.comments.length})
+            </h2>
+            {post.comments.map((comment) => (
+              <div
+                key={comment.id}
+                className="bg-white rounded-xl shadow-sm p-6 space-y-4"
+              >
+                <div className="flex items-center space-x-4">
+                  <Avatar
+                    size="sm"
+                    src={comment.author.image}
+                    name={comment.author.name}
+                  />
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <p className="font-semibold text-gray-900">
+                        {comment.author.name}
+                      </p>
+                      <span className="text-sm text-pink-500">
+                        {comment.author.specialty
+                          ? "Ahli " +
+                            expertSpecialtyLabel[
+                              comment.author
+                                .specialty as unknown as ExpertSpecialtyType
+                            ]
+                          : "Pengguna"}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      {formatDistanceToNow(new Date(comment.createdAt), {
+                        addSuffix: true,
+                        locale: id,
+                      })}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-gray-600">{comment.content}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

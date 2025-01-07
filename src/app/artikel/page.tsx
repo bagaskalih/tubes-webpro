@@ -8,11 +8,15 @@ import {
   Stack,
   Avatar,
   Image,
+  SimpleGrid,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
+import { subtitle } from "@/components/primitives";
+import { title } from "process";
 
 enum ExpertSpecialty {
   NUTRISI_ANAK,
@@ -42,6 +46,7 @@ interface Author {
   name: string;
   role: string;
   specialty?: ExpertSpecialty;
+  image: string;
 }
 
 interface Post {
@@ -55,51 +60,116 @@ interface Post {
     comments: number;
   };
 }
-
 export default function NewsList() {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await fetch("/api/posts");
-      const data = await response.json();
-      setPosts(data);
+      try {
+        const response = await fetch("/api/posts");
+        const data = await response.json();
+        setPosts(data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchPosts();
   }, []);
 
   return (
-    <Container maxW="container.lg" py={8}>
-      <Stack spacing={8}>
-        {posts.map((post) => (
-          <Link key={post.id} href={`/artikel/${post.id}`}>
-            <Box
-              p={5}
-              cursor="pointer"
-              _hover={{ shadow: "md" }}
-              borderRadius="lg"
-              borderWidth="2px"
-              background={"whitesmoke"}
-            >
-              <Stack direction="row" spacing={4} height="200px">
-                <Stack flex={1} spacing={2}>
-                  <Heading fontSize="xl">{post.title}</Heading>
-                  <Text noOfLines={3} color="gray.500">
-                    {post.content}
-                  </Text>
-                  <Stack direction="row" spacing={4} align="center" mt="auto">
-                    <Avatar size="sm" />
-                    <Stack direction="column" spacing={0} fontSize="sm">
-                      <Text fontWeight={600}>
-                        {post.author.name} {" · Ahli "}
-                        {post.author.specialty
-                          ? expertSpecialtyLabel[
-                              post.author
-                                .specialty as unknown as ExpertSpecialtyType
-                            ]
-                          : post.author.role}
+    <Container maxW="7xl" px={{ base: 4, sm: 6, lg: 8 }} py={8}>
+      <Stack spacing={8} mb={12}>
+        <Box textAlign="center">
+          <Heading className="text-4xl md:text-5xl font-bold tracking-tight">
+            Artikel Terbaru
+          </Heading>
+          <Text
+            className={subtitle({
+              class: "mt-4 max-w-2xl mx-auto text-xl text-gray-600",
+            })}
+          >
+            Wawasan dan Tips dari Para Ahli untuk Orang Tua Modern
+          </Text>
+        </Box>
+
+        <SimpleGrid columns={{ base: 1, lg: 2 }} spacing={8}>
+          {posts.map((post) => (
+            <Link key={post.id} href={`/artikel/${post.id}`}>
+              <Box
+                p={6}
+                height="full"
+                transition="all 0.3s"
+                borderRadius="xl"
+                borderWidth="1px"
+                borderColor="gray.200"
+                bg="white"
+                _hover={{
+                  transform: "translateY(-4px)",
+                  shadow: "xl",
+                  borderColor: "pink.200",
+                }}
+              >
+                <Stack spacing={4}>
+                  {post.image && (
+                    <Box
+                      borderRadius="lg"
+                      overflow="hidden"
+                      position="relative"
+                      height="200px"
+                    >
+                      <Image
+                        src={post.image}
+                        alt={post.title}
+                        objectFit="cover"
+                        width="100%"
+                        height="100%"
+                      />
+                    </Box>
+                  )}
+
+                  <Stack spacing={3}>
+                    <Heading
+                      fontSize="xl"
+                      bgGradient="linear(to-r, pink.500, purple.500)"
+                      bgClip="text"
+                    >
+                      {post.title}
+                    </Heading>
+                    <Text noOfLines={3} color="gray.600">
+                      {post.content}
+                    </Text>
+                  </Stack>
+
+                  <Stack
+                    direction="row"
+                    spacing={4}
+                    align="center"
+                    mt="auto"
+                    pt={4}
+                    borderTop="1px"
+                    borderColor="gray.100"
+                  >
+                    <Avatar
+                      size="md"
+                      src={post.author.image}
+                      ring={2}
+                      ringColor="pink.400"
+                    />
+                    <Stack spacing={0}>
+                      <Text fontWeight="bold" fontSize="sm">
+                        {post.author.name}
+                        <Text as="span" color="pink.500">
+                          {" · "}
+                          {expertSpecialtyLabel[
+                            post.author
+                              .specialty as unknown as ExpertSpecialtyType
+                          ] || post.author.role}
+                        </Text>
                       </Text>
-                      <Text color="gray.500">
+                      <Text fontSize="sm" color="gray.500">
                         {formatDistanceToNow(new Date(post.createdAt), {
                           addSuffix: true,
                           locale: id,
@@ -110,20 +180,10 @@ export default function NewsList() {
                     </Stack>
                   </Stack>
                 </Stack>
-                {post.image && (
-                  <Image
-                    src={post.image}
-                    alt={post.title + " image"}
-                    width="200px"
-                    height="200px"
-                    objectFit="cover"
-                    borderRadius="lg"
-                  />
-                )}
-              </Stack>
-            </Box>
-          </Link>
-        ))}
+              </Box>
+            </Link>
+          ))}
+        </SimpleGrid>
       </Stack>
     </Container>
   );

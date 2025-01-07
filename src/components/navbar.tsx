@@ -87,14 +87,7 @@ export default function WithSubnavigation() {
 
   return (
     <Box>
-      <Flex
-        bg={useColorModeValue("white", "gray.800")}
-        color={useColorModeValue("gray.600", "white")}
-        minH={"60px"}
-        py={{ base: 2 }}
-        px={{ base: 4 }}
-        align={"center"}
-      >
+      <Flex minH={"72px"} py={4} align={"center"} justify={"space-between"}>
         <Flex
           flex={{ base: 1, md: "auto" }}
           ml={{ base: -2 }}
@@ -109,20 +102,20 @@ export default function WithSubnavigation() {
             aria-label={"Toggle Navigation"}
           />
         </Flex>
-        <Flex flex={{ base: 1 }} justify={{ base: "center", md: "start" }}>
-          <Link href={"/"} passHref>
-            <Text
-              textAlign={useBreakpointValue({ base: "center", md: "left" })}
-              fontFamily={"heading"}
-              color={useColorModeValue("gray.800", "white")}
-            >
-              Portal Online Orangtua Pintar
-            </Text>
-          </Link>
 
-          <Flex display={{ base: "none", md: "flex" }} ml={10}>
-            <DesktopNav />
-          </Flex>
+        <Link href="/" passHref>
+          <Text
+            fontSize={"xl"}
+            fontWeight={"bold"}
+            bgGradient="linear(to-r, pink.500, purple.500)"
+            bgClip="text"
+          >
+            Portal Online Orangtua Pintar
+          </Text>
+        </Link>
+
+        <Flex display={{ base: "none", md: "flex" }} ml={10}>
+          <DesktopNav />
         </Flex>
 
         <Stack
@@ -130,6 +123,7 @@ export default function WithSubnavigation() {
           justify={"flex-end"}
           direction={"row"}
           spacing={6}
+          align={"center"}
         >
           {session?.user ? (
             <Menu>
@@ -140,23 +134,49 @@ export default function WithSubnavigation() {
                 cursor={"pointer"}
                 minW={0}
               >
-                <Avatar size={"sm"} src={session.user.image || undefined} />
+                <Avatar
+                  size={"sm"}
+                  src={session.user.image || undefined}
+                  ring={2}
+                  ringColor="pink.400"
+                />
               </MenuButton>
-              <MenuList alignItems={"center"}>
-                <br />
-                <Center>
-                  <Avatar size={"2xl"} src={session.user.image || undefined} />
-                </Center>
-                <br />
-                <Center>
-                  <Text fontWeight={600}>{session.user.name}</Text>
-                </Center>
-                <br />
+              <MenuList
+                rounded={"xl"}
+                shadow={"xl"}
+                border={"none"}
+                bg={"white"}
+                overflow={"hidden"}
+              >
+                <Box px={4} pt={4} pb={2}>
+                  <Avatar
+                    size={"xl"}
+                    src={session.user.image || undefined}
+                    mb={4}
+                  />
+                  <Text fontWeight={"bold"} fontSize={"lg"}>
+                    {session.user.name}
+                  </Text>
+                </Box>
                 <MenuDivider />
-                <MenuItem onClick={handleDashboard}>Dashboard</MenuItem>
-                <MenuItem onClick={handleSettings}>Pengaturan Akun</MenuItem>
+                <MenuItem
+                  icon={<Icon as={ChevronRightIcon} />}
+                  onClick={handleDashboard}
+                >
+                  Dashboard
+                </MenuItem>
+                <MenuItem
+                  icon={<Icon as={ChevronRightIcon} />}
+                  onClick={handleSettings}
+                >
+                  Pengaturan Akun
+                </MenuItem>
                 <MenuDivider />
-                <MenuItem color={"red"} onClick={handleSignOut}>
+                <MenuItem
+                  color={"red.500"}
+                  fontWeight={"medium"}
+                  onClick={handleSignOut}
+                >
                   Keluar
                 </MenuItem>
               </MenuList>
@@ -166,9 +186,13 @@ export default function WithSubnavigation() {
               <Button
                 as={"a"}
                 fontSize={"sm"}
-                fontWeight={400}
-                variant={"link"}
+                fontWeight={500}
+                variant={"ghost"}
                 href={"/signin"}
+                color={"gray.600"}
+                _hover={{
+                  color: "pink.500",
+                }}
               >
                 Masuk
               </Button>
@@ -181,8 +205,10 @@ export default function WithSubnavigation() {
                 bg={"pink.400"}
                 href={"/signup"}
                 _hover={{
-                  bg: "pink.300",
+                  bg: "pink.500",
                 }}
+                rounded={"full"}
+                px={6}
               >
                 Daftar
               </Button>

@@ -30,6 +30,7 @@ export interface Thread {
   _count: {
     comments: number;
   };
+  createdAt: string;
 }
 
 export enum Category {

@@ -1,21 +1,33 @@
 "use client";
 
-import Link from "next/link";
 import { MessageCircle, Users, BookOpen } from "lucide-react";
+import {
+  Container,
+  Stack,
+  Box,
+  Heading,
+  Text,
+  SimpleGrid,
+} from "@chakra-ui/react";
+import Link from "next/link";
+import { title, subtitle } from "@/components/primitives";
 
 const listLayanan = [
   {
     title: "Konsultasi Online Dengan Ahli",
+    description: "Konsultasi langsung dengan ahli pengasuhan anak",
     link: "konsultasi",
     icon: MessageCircle,
   },
   {
     title: "Forum Komunitas",
+    description: "Bergabung dengan komunitas orang tua lainnya",
     link: "forum",
     icon: Users,
   },
   {
     title: "Akses Artikel Terkini",
+    description: "Artikel terbaru seputar pengasuhan anak",
     link: "artikel",
     icon: BookOpen,
   },
@@ -23,31 +35,70 @@ const listLayanan = [
 
 export default function Layanan() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-start bg-gray-100 py-8">
-      <h1 className="text-2xl font-semibold text-gray-800 mt-8 mb-6">
-        Layanan kami
-      </h1>
+    <Container maxW="7xl" px={{ base: 4, sm: 6, lg: 8 }} py={8}>
+      <Stack spacing={8} mb={12}>
+        <Box textAlign="center">
+          <Heading
+            className={title({
+              class: "text-4xl md:text-5xl font-bold tracking-tight",
+            })}
+          >
+            Layanan Kami
+          </Heading>
+          <Text
+            className={subtitle({
+              class: "mt-4 max-w-2xl mx-auto text-xl text-gray-600",
+            })}
+          >
+            Solusi Lengkap untuk Mendukung Perjalanan Pengasuhan Anda
+          </Text>
+        </Box>
 
-      <div className="w-full max-w-2xl bg-white/50 rounded-xl shadow-lg p-6">
-        <div className="flex flex-col gap-4">
+        <SimpleGrid
+          columns={{ base: 1, md: 2, lg: 3 }}
+          spacing={8}
+          px={{ base: 4, lg: 8 }}
+        >
           {listLayanan.map((item) => (
-            <Link
-              key={item.link}
-              href={`/${item.link}`}
-              className="block w-full"
-            >
-              <div className="w-full bg-white rounded-lg p-4 shadow transition-all duration-200 hover:shadow-md hover:bg-gray-50">
-                <div className="flex items-center gap-3">
-                  <item.icon className="w-5 h-5 text-gray-500" />
-                  <span className="text-gray-700 font-medium">
-                    {item.title}
-                  </span>
-                </div>
-              </div>
+            <Link key={item.link} href={`/${item.link}`}>
+              <Box
+                p={6}
+                height="full"
+                bg="white"
+                borderRadius="xl"
+                borderWidth="1px"
+                borderColor="gray.200"
+                transition="all 0.3s"
+                _hover={{
+                  transform: "translateY(-4px)",
+                  shadow: "xl",
+                  borderColor: "pink.200",
+                }}
+              >
+                <Stack spacing={4}>
+                  <Box p={3} borderRadius="lg" bg="pink.50" width="fit-content">
+                    <item.icon className="w-6 h-6 text-pink-500" />
+                  </Box>
+
+                  <Stack spacing={2}>
+                    <Text
+                      fontSize="lg"
+                      fontWeight="bold"
+                      bgGradient="linear(to-r, pink.500, purple.500)"
+                      bgClip="text"
+                    >
+                      {item.title}
+                    </Text>
+                    <Text color="gray.600" fontSize="sm">
+                      {item.description}
+                    </Text>
+                  </Stack>
+                </Stack>
+              </Box>
             </Link>
           ))}
-        </div>
-      </div>
-    </div>
+        </SimpleGrid>
+      </Stack>
+    </Container>
   );
 }

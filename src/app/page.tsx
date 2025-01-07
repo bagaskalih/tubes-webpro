@@ -1,19 +1,31 @@
+// page.tsx
 import { title, subtitle } from "@/components/primitives";
 import Carousel from "@/components/carousel";
 
 export default function Home() {
   return (
-    <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
-      <div className="inline-block max-w-xl text-center justify-center">
-        <span className={title()}>Portal Online</span>
-        <br />
-        <span className={title()}>Orangtua Pintar</span>
-        <div className={subtitle({ class: "mt-4" })}>
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="text-center space-y-6 mb-12">
+        <h1 className="text-5xl font-bold text-gray-900 tracking-tight">
+          <span className={title()}>Portal Online</span>
+          <br />
+          <span
+            className={title({
+              class:
+                "bg-gradient-to-r from-pink-500 to-purple-500 text-transparent bg-clip-text",
+            })}
+          >
+            Orangtua Pintar
+          </span>
+        </h1>
+        <p
+          className={subtitle({
+            class: "max-w-2xl mx-auto text-xl text-gray-600",
+          })}
+        >
           Solusi Modern untuk Orang Tua Cerdas.
-        </div>
+        </p>
       </div>
-
-      {/* carousel */}
       <Carousel />
     </section>
   );

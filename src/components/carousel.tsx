@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import { Box, Button, Flex, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Text, IconButton } from "@chakra-ui/react";
+import { ChevronLeftIcon, ChevronRightIcon } from "@chakra-ui/icons";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -49,48 +50,105 @@ export default function CardCarousel() {
     );
   };
 
+  const prevSlide = () => {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0 ? artikels.length - 4 : prevIndex - 1
+    );
+  };
+
   return (
-    <Box w="100%" maxW="80%" mx="auto" p={4}>
-      <Flex overflow="hidden">
+    <Box position="relative" w="full" maxW="7xl" mx="auto">
+      <Box position="relative" overflow="hidden" px={4}>
         <Flex
-          flexDirection={{ base: "column", lg: "row" }}
-          transition="all 0.5s"
-          transform={{
-            base: "none",
-            lg: `translateX(-${currentIndex * 26}%)`,
-            xl: `translateX(-${currentIndex * 25}%)`,
-          }}
-          mx="auto"
-          w={{ base: "100%", lg: "100%" }}
+          transition="transform 0.5s ease-in-out"
+          transform={`translateX(-${currentIndex * (100 / 4)}%)`}
+          gap={6}
         >
           {artikels.map((artikel) => (
             <Box
               key={artikel.id}
-              minW={{ base: "100%", lg: "24%" }}
-              maxW={{ base: "100%", lg: "24%" }}
-              minH="150px"
-              p={4}
-              borderWidth="2px"
-              borderRadius="lg"
-              mr={{ base: 0, lg: 3 }}
-              mb={{ base: 4, lg: 0 }}
-              bgImage={`url(${artikel.image})`}
-              bgSize="cover"
+              flex="0 0 calc(25% - 24px)"
+              minW="calc(25% - 24px)"
             >
               <Link href={`/artikel/${artikel.id}`}>
-                <Text fontSize="xl" fontWeight="bold" color={"black"}>
-                  {artikel.title}
-                </Text>
+                <Box
+                  h="320px"
+                  position="relative"
+                  borderRadius="xl"
+                  overflow="hidden"
+                  boxShadow="md"
+                  transition="transform 0.2s"
+                  _hover={{ transform: "translateY(-4px)" }}
+                  bg="white"
+                  border="1px"
+                  borderColor="gray.200"
+                >
+                  <Box
+                    position="absolute"
+                    top="0"
+                    left="0"
+                    right="0"
+                    h="200px"
+                    bgImage={artikel.image ? `url(${artikel.image})` : "none"}
+                    bgColor={artikel.image ? "transparent" : "gray.100"}
+                    bgSize="cover"
+                    bgPosition="center"
+                  />
+                  <Box
+                    position="absolute"
+                    bottom="0"
+                    left="0"
+                    right="0"
+                    p={6}
+                    bg="white"
+                    minH="120px"
+                  >
+                    <Text
+                      fontSize="lg"
+                      fontWeight="bold"
+                      color="gray.800"
+                      mb={2}
+                      noOfLines={2}
+                    >
+                      {artikel.title}
+                    </Text>
+                    <Flex align="center" color="gray.500" fontSize="sm">
+                      <Text fontWeight="medium">{artikel.author.name}</Text>
+                      <Text mx={2}>•</Text>
+                      <Text>
+                        {new Date(artikel.createdAt).toLocaleDateString()}
+                      </Text>
+                    </Flex>
+                  </Box>
+                </Box>
               </Link>
             </Box>
           ))}
         </Flex>
-      </Flex>
+      </Box>
+
       {artikels.length > 4 && (
-        <Flex justify="flex-end" mt={2}>
-          <Button onClick={nextSlide} colorScheme="blue">
-            Next
-          </Button>
+        <Flex justify="center" mt={6} gap={4}>
+          <IconButton
+            onClick={prevSlide}
+            aria-label="Previous slide"
+            icon={<ChevronLeftIcon boxSize={6} />}
+            colorScheme="pink"
+            variant="ghost"
+            size="lg"
+            isRound
+            _hover={{ bg: "pink.50" }}
+          />
+          <IconButton
+            onClick={nextSlide}
+            aria-label="Next slide"
+            icon={<ChevronRightIcon boxSize={6} />}
+            colorScheme="pink"
+            variant="ghost"
+            size="lg"
+            isRound
+            _hover={{ bg: "pink.50" }}
+          />
         </Flex>
       )}
     </Box>

@@ -19,11 +19,16 @@ import {
   Icon,
   useToast,
   Avatar,
+  Badge,
+  Container,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { subtitle } from "@/components/primitives";
+import { title } from "process";
 
 interface Expert {
   id: number;
@@ -134,92 +139,174 @@ export default function KonsultasiDenganAhli() {
   };
 
   return (
-    <Flex
-      minH={"100vh"}
-      direction={"column"}
-      align={"center"}
-      bg={useColorModeValue("gray.50", "gray.800")}
-      p={4}
-    >
-      <Heading mb={6}>Daftar Ahli</Heading>
-      <Stack spacing={6} w={"full"} maxW={"3xl"}>
-        {experts.map((expert) => (
-          <Box
-            key={expert.id}
-            p={4}
-            boxShadow={"md"}
-            rounded={"md"}
-            display={"flex"}
-            alignItems={"center"}
-            gap={4}
-            _hover={{ boxShadow: "lg", cursor: "pointer" }}
-            onClick={() => handleCardClick(expert)}
+    <Container maxW="7xl" px={{ base: 4, sm: 6, lg: 8 }} py={8}>
+      <Stack spacing={8}>
+        <Box textAlign="center" mb={8}>
+          <Heading className="text-4xl md:text-5xl font-bold tracking-tight">
+            Konsultasi Dengan Ahli
+          </Heading>
+          <Text
+            className={subtitle({
+              class: "mt-4 max-w-2xl mx-auto text-xl text-gray-600",
+            })}
           >
-            <Avatar
-              size={"xl"}
-              name={expert.name}
-              src={expert.image || "https://via.placeholder.com/150"}
-            />
-            <Box>
-              <Text fontWeight={"bold"} fontSize={"lg"}>
-                {expert.name}
-              </Text>
-              <Text color={"gray.500"}>
-                {specialtyLabels[expert.specialty as ExpertSpecialty]}
-              </Text>
-              <Flex mt={2} alignItems="center" gap={2}>
-                {renderStars(expert.rating)}
-                <Text color="gray.500" fontSize="sm">
-                  ({expert.totalReviews} reviews)
-                </Text>
-              </Flex>
+            Temukan Ahli yang Tepat untuk Mendampingi Perjalanan Pengasuhan Anda
+          </Text>
+        </Box>
+
+        <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+          {experts.map((expert) => (
+            <Box
+              key={expert.id}
+              bg="white"
+              p={6}
+              borderRadius="xl"
+              borderWidth="1px"
+              borderColor="gray.200"
+              transition="all 0.3s"
+              _hover={{
+                transform: "translateY(-4px)",
+                shadow: "xl",
+                borderColor: "pink.200",
+                cursor: "pointer",
+              }}
+              onClick={() => handleCardClick(expert)}
+            >
+              <Stack spacing={4} align="center">
+                <Avatar
+                  size="2xl"
+                  name={expert.name}
+                  src={expert.image || "https://via.placeholder.com/150"}
+                  ring={2}
+                  ringColor="pink.400"
+                />
+
+                <Stack spacing={2} textAlign="center">
+                  <Heading
+                    size="md"
+                    bgGradient="linear(to-r, pink.500, purple.500)"
+                    bgClip="text"
+                  >
+                    {expert.name}
+                  </Heading>
+
+                  <Badge
+                    px={3}
+                    py={1}
+                    colorScheme="pink"
+                    rounded="full"
+                    textTransform="capitalize"
+                  >
+                    {specialtyLabels[expert.specialty as ExpertSpecialty]}
+                  </Badge>
+
+                  <Stack spacing={1} align="center">
+                    <Flex align="center" gap={2}>
+                      {renderStars(expert.rating)}
+                      <Text color="gray.500" fontSize="sm">
+                        ({expert.totalReviews})
+                      </Text>
+                    </Flex>
+                    <Text color="gray.600" fontSize="sm" noOfLines={2}>
+                      {expert.about ||
+                        "Siap membantu memberikan solusi terbaik untuk Anda"}
+                    </Text>
+                  </Stack>
+                </Stack>
+              </Stack>
             </Box>
-          </Box>
-        ))}
+          ))}
+        </SimpleGrid>
       </Stack>
 
       {selectedExpert && (
-        <Modal isOpen={isOpen} onClose={onClose} isCentered>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>{selectedExpert.name}</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <Flex direction={"column"} align={"center"} textAlign={"center"}>
+        <Modal isOpen={isOpen} onClose={onClose} size="lg" isCentered>
+          <ModalOverlay backdropFilter="blur(4px)" />
+          <ModalContent rounded="xl">
+            <ModalHeader
+              bgGradient="linear(to-r, pink.400, purple.500)"
+              color="white"
+              roundedTop="xl"
+            >
+              Detail Ahli
+            </ModalHeader>
+            <ModalCloseButton color="white" />
+
+            <ModalBody py={6}>
+              <Stack spacing={6} align="center">
                 <Avatar
-                  size={"xl"}
+                  size="2xl"
                   name={selectedExpert.name}
                   src={
                     selectedExpert.image || "https://via.placeholder.com/150"
                   }
-                  mb={4}
+                  ring={2}
+                  ringColor="pink.400"
                 />
-                <Text fontWeight={"bold"} fontSize={"lg"} mb={2}>
-                  {selectedExpert.name}
-                </Text>
-                <Text fontWeight={"bold"} fontSize={"lg"} mb={2}>
-                  {specialtyLabels[selectedExpert.specialty as ExpertSpecialty]}
-                </Text>
-                <Flex mb={4} alignItems="center" gap={2}>
-                  {renderStars(selectedExpert.rating)}
-                  <Text color="gray.500" fontSize="sm">
-                    ({selectedExpert.totalReviews} reviews)
-                  </Text>
-                </Flex>
-                <Text textAlign={"justify"}>{selectedExpert.about}</Text>
-              </Flex>
+
+                <Stack spacing={4} textAlign="center">
+                  <Stack spacing={2}>
+                    <Heading
+                      size="lg"
+                      bgGradient="linear(to-r, pink.500, purple.500)"
+                      bgClip="text"
+                    >
+                      {selectedExpert.name}
+                    </Heading>
+
+                    <Badge
+                      px={3}
+                      py={1}
+                      colorScheme="pink"
+                      rounded="full"
+                      textTransform="capitalize"
+                    >
+                      {
+                        specialtyLabels[
+                          selectedExpert.specialty as ExpertSpecialty
+                        ]
+                      }
+                    </Badge>
+                  </Stack>
+
+                  <Flex justify="center" align="center" gap={2}>
+                    {renderStars(selectedExpert.rating)}
+                    <Text color="gray.500" fontSize="sm">
+                      ({selectedExpert.totalReviews} ulasan)
+                    </Text>
+                  </Flex>
+
+                  <Text color="gray.700">{selectedExpert.about}</Text>
+                </Stack>
+              </Stack>
             </ModalBody>
-            <ModalFooter>
-              <Button colorScheme="green" mr={3} onClick={startConsultation}>
+
+            <ModalFooter gap={3}>
+              <Button
+                bgGradient="linear(to-r, pink.400, purple.500)"
+                color="white"
+                _hover={{
+                  bgGradient: "linear(to-r, pink.500, purple.600)",
+                }}
+                onClick={startConsultation}
+                flex={1}
+              >
                 Mulai Konsultasi
               </Button>
-              <Button colorScheme="blue" onClick={onClose}>
+
+              <Button
+                variant="ghost"
+                onClick={onClose}
+                _hover={{
+                  bg: "gray.100",
+                }}
+              >
                 Tutup
               </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
       )}
-    </Flex>
+    </Container>
   );
 }

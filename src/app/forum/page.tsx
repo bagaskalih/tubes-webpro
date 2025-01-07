@@ -26,9 +26,16 @@ import {
   Input,
   Textarea,
   useToast,
+  Box,
+  Flex,
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { subtitle } from "@/components/primitives";
+import { formatDistanceToNow } from "date-fns";
+import { id } from "date-fns/locale";
+import { MessageCircle, User, Clock } from "lucide-react";
+import { title } from "process";
 
 const ForumPage = () => {
   const { data: session } = useSession();
@@ -105,85 +112,177 @@ const ForumPage = () => {
   };
 
   return (
-    <Container maxW="container.xl" py={8}>
-      <Stack spacing={6}>
-        <HStack justify="space-between">
-          <Heading size="lg">Forum Diskusi</Heading>
+    <Container maxW="7xl" px={{ base: 4, sm: 6, lg: 8 }} py={8}>
+      <Stack spacing={8}>
+        <Box textAlign="center" mb={8}>
+          <Heading className="text-4xl md:text-5xl font-bold tracking-tight">
+            Forum Diskusi
+          </Heading>
+          <Text
+            className={subtitle({
+              class: "mt-4 max-w-2xl mx-auto text-xl text-gray-600",
+            })}
+          >
+            Berbagi Pengalaman dan Pengetahuan Sesama Orang Tua
+          </Text>
+        </Box>
+
+        <Flex
+          direction={{ base: "column", md: "row" }}
+          justify="space-between"
+          align={{ base: "stretch", md: "center" }}
+          gap={4}
+        >
+          <Select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            maxW={{ base: "full", md: "200px" }}
+            bg="white"
+            borderColor="gray.200"
+            _hover={{ borderColor: "pink.200" }}
+          >
+            <option value="ALL">Semua Kategori</option>
+            <option value="UMUM">Umum</option>
+            <option value="TEKNOLOGI">Teknologi</option>
+            <option value="KESEHATAN">Kesehatan</option>
+            <option value="EDUKASI">Edukasi</option>
+            <option value="LAINNYA">Lainnya</option>
+          </Select>
+
           {session && (
-            <Button colorScheme="blue" onClick={onOpen}>
+            <Button
+              onClick={onOpen}
+              bgGradient="linear(to-r, pink.400, purple.500)"
+              color="white"
+              _hover={{
+                bgGradient: "linear(to-r, pink.500, purple.600)",
+                transform: "translateY(-2px)",
+                shadow: "md",
+              }}
+              rounded="full"
+              px={6}
+              leftIcon={<MessageCircle size={18} />}
+            >
               Buat Thread Baru
             </Button>
           )}
-        </HStack>
-
-        <Select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          maxW="200px"
-        >
-          <option value="ALL">Semua Kategori</option>
-          <option value="UMUM">Umum</option>
-          <option value="TEKNOLOG8I">Teknologi</option>
-          <option value="KESEHATAN">Kesehatan</option>
-          <option value="EDUKASI">Edukasi</option>
-          <option value="LAINNYA">Lainnya</option>
-        </Select>
+        </Flex>
 
         <Stack spacing={4}>
           {threads.map((thread) => (
-            <Card
+            <Box
               key={thread.id}
               cursor="pointer"
               onClick={() => router.push(`/forum/${thread.id}`)}
-              _hover={{ shadow: "md" }}
+              bg="white"
+              borderWidth="1px"
+              borderColor="gray.200"
+              rounded="xl"
+              transition="all 0.3s"
+              _hover={{
+                transform: "translateY(-2px)",
+                shadow: "xl",
+                borderColor: "pink.200",
+              }}
             >
-              <CardBody>
-                <Stack spacing={2}>
-                  <Heading size="md">{thread.title}</Heading>
-                  <HStack>
-                    <Badge colorScheme="blue">{thread.category}</Badge>
-                    <Text fontSize="sm">
-                      by {thread.author.name} ({thread.author.role})
-                    </Text>
-                    <Text fontSize="sm">{thread._count.comments} comments</Text>
-                  </HStack>
+              <Box p={6}>
+                <Stack spacing={4}>
+                  <Heading
+                    size="md"
+                    bgGradient="linear(to-r, pink.500, purple.500)"
+                    bgClip="text"
+                  >
+                    {thread.title}
+                  </Heading>
+
+                  <Stack
+                    direction={{ base: "column", sm: "row" }}
+                    spacing={4}
+                    align={{ base: "flex-start", sm: "center" }}
+                  >
+                    <Badge
+                      px={3}
+                      py={1}
+                      colorScheme="pink"
+                      rounded="full"
+                      textTransform="capitalize"
+                    >
+                      {thread.category.toLowerCase()}
+                    </Badge>
+
+                    <HStack spacing={4} color="gray.500" fontSize="sm">
+                      <HStack>
+                        <User size={14} />
+                        <Text>{thread.author.name}</Text>
+                      </HStack>
+
+                      <HStack>
+                        <Clock size={14} />
+                        <Text>
+                          {formatDistanceToNow(new Date(thread.createdAt), {
+                            addSuffix: true,
+                            locale: id,
+                          })}
+                        </Text>
+                      </HStack>
+
+                      <HStack>
+                        <MessageCircle size={14} />
+                        <Text>{thread._count.comments} komentar</Text>
+                      </HStack>
+                    </HStack>
+                  </Stack>
                 </Stack>
-              </CardBody>
-            </Card>
+              </Box>
+            </Box>
           ))}
         </Stack>
       </Stack>
 
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>Create New Thread</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
+      <Modal isOpen={isOpen} onClose={onClose} size="xl">
+        <ModalOverlay backdropFilter="blur(4px)" />
+        <ModalContent rounded="xl">
+          <ModalHeader
+            bgGradient="linear(to-r, pink.400, purple.500)"
+            color="white"
+            roundedTop="xl"
+          >
+            Buat Thread Baru
+          </ModalHeader>
+          <ModalCloseButton color="white" />
+
+          <ModalBody py={6}>
             <form onSubmit={handleCreateThread}>
-              <Stack spacing={4}>
+              <Stack spacing={6}>
                 <FormControl isRequired>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>Judul</FormLabel>
                   <Input
                     value={newThread.title}
                     onChange={(e) =>
                       setNewThread({ ...newThread, title: e.target.value })
                     }
+                    borderColor="gray.200"
+                    _hover={{ borderColor: "pink.200" }}
+                    _focus={{ borderColor: "pink.400", boxShadow: "none" }}
                   />
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel>Content</FormLabel>
+                  <FormLabel>Konten</FormLabel>
                   <Textarea
                     value={newThread.content}
                     onChange={(e) =>
                       setNewThread({ ...newThread, content: e.target.value })
                     }
+                    minH="200px"
+                    borderColor="gray.200"
+                    _hover={{ borderColor: "pink.200" }}
+                    _focus={{ borderColor: "pink.400", boxShadow: "none" }}
                   />
                 </FormControl>
 
                 <FormControl isRequired>
-                  <FormLabel>Category</FormLabel>
+                  <FormLabel>Kategori</FormLabel>
                   <Select
                     value={newThread.category}
                     onChange={(e) =>
@@ -197,6 +296,9 @@ const ForumPage = () => {
                           | "LAINNYA",
                       })
                     }
+                    borderColor="gray.200"
+                    _hover={{ borderColor: "pink.200" }}
+                    _focus={{ borderColor: "pink.400", boxShadow: "none" }}
                   >
                     <option value="UMUM">Umum</option>
                     <option value="TEKNOLOGI">Teknologi</option>
@@ -208,11 +310,15 @@ const ForumPage = () => {
 
                 <Button
                   type="submit"
-                  colorScheme="blue"
+                  bgGradient="linear(to-r, pink.400, purple.500)"
+                  color="white"
+                  _hover={{
+                    bgGradient: "linear(to-r, pink.500, purple.600)",
+                  }}
                   isLoading={loading}
-                  mb={4}
+                  loadingText="Membuat Thread..."
                 >
-                  Create Thread
+                  Buat Thread
                 </Button>
               </Stack>
             </form>

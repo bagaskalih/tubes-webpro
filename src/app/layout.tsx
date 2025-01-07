@@ -1,3 +1,4 @@
+// layout.tsx
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -28,14 +29,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
       >
         <Providers>
-          <div className="relative flex flex-col h-screen border-black ">
-            <header className="w-4/5 mx-auto">
-              <WithSubnavigation />
+          <div className="relative flex flex-col min-h-screen">
+            <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <WithSubnavigation />
+              </div>
             </header>
-            <main className="flex-1 p-4">{children}</main>
+            <main className="flex-1 py-8">{children}</main>
           </div>
         </Providers>
       </body>

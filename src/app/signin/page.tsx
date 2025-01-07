@@ -15,6 +15,9 @@ import {
   Link,
   FormErrorMessage,
   useToast,
+  Divider,
+  InputGroup,
+  InputRightElement,
 } from "@chakra-ui/react";
 import { FcGoogle } from "react-icons/fc";
 import { z } from "zod";
@@ -24,6 +27,7 @@ import { useForm } from "react-hook-form";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 
 // Define the schema for validation using zod
 const FormSchema = z.object({
@@ -37,6 +41,7 @@ const FormSchema = z.object({
 export default function SignInForm() {
   const router = useRouter();
   const session = useSession();
+  const [showPassword, setShowPassword] = useState(false);
 
   // Redirect to dashboard if user is already signed in
   if (session.data) {
@@ -140,79 +145,141 @@ export default function SignInForm() {
       justify={"center"}
       bg={useColorModeValue("gray.50", "gray.800")}
     >
-      <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
-        <Stack align={"center"}>
-          <Heading fontSize={"4xl"}>Masuk ke akun anda</Heading>
+      <Stack spacing={8} mx={"auto"} maxW={"md"} w="full" py={12} px={6}>
+        <Stack align={"center"} spacing={6}>
+          <Heading
+            fontSize={"4xl"}
+            bgGradient="linear(to-r, pink.400, purple.400)"
+            bgClip="text"
+            textAlign="center"
+          >
+            Selamat Datang Kembali
+          </Heading>
+          <Text fontSize={"lg"} color={"gray.600"}>
+            Masuk ke akun anda untuk melanjutkan ✌️
+          </Text>
         </Stack>
+
         <Box
-          rounded={"lg"}
+          rounded={"xl"}
           bg={useColorModeValue("white", "gray.700")}
-          boxShadow={"lg"}
+          boxShadow={"xl"}
           p={8}
         >
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack spacing={4}>
-              {/* Email Input */}
+            <Stack spacing={5}>
               <FormControl id="email" isInvalid={!!errors.email}>
-                <FormLabel>Alamat Email</FormLabel>
-                <Input type="email" {...register("email")} />
+                <FormLabel fontSize="sm" fontWeight="medium">
+                  Alamat Email
+                </FormLabel>
+                <Input
+                  type="email"
+                  {...register("email")}
+                  size="lg"
+                  borderRadius="lg"
+                  focusBorderColor="pink.400"
+                />
                 <FormErrorMessage>{errors.email?.message}</FormErrorMessage>
               </FormControl>
 
-              {/* Password Input */}
               <FormControl id="password" isInvalid={!!errors.password}>
-                <FormLabel>Password</FormLabel>
-                <Input type="password" {...register("password")} />
+                <FormLabel fontSize="sm" fontWeight="medium">
+                  Password
+                </FormLabel>
+                <InputGroup size="lg">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    {...register("password")}
+                    borderRadius="lg"
+                    focusBorderColor="pink.400"
+                  />
+                  <InputRightElement width="3rem">
+                    <Button
+                      h="1.75rem"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
                 <FormErrorMessage>{errors.password?.message}</FormErrorMessage>
               </FormControl>
 
-              {/* Remember Me and Forgot Password */}
-              <Stack spacing={5} mb={5}>
-                <Stack
-                  direction={{ base: "column", sm: "row" }}
-                  align={"start"}
-                  justify={"space-between"}
-                >
-                  <Link color="teal.500">Lupa Password?</Link>
-                </Stack>
-                <Text alignSelf="end">
-                  Belum punya akun?{" "}
-                  <Link color="teal.500" href="/signup">
-                    Daftar
+              <Stack spacing={4}>
+                <Flex justify="space-between" align="center" fontSize="sm">
+                  <Link
+                    color="pink.500"
+                    _hover={{ color: "pink.600" }}
+                    fontWeight="medium"
+                  >
+                    Lupa Password?
                   </Link>
-                </Text>
+                  <Text>
+                    Belum punya akun?{" "}
+                    <Link
+                      href="/signup"
+                      color="pink.500"
+                      _hover={{ color: "pink.600" }}
+                      fontWeight="medium"
+                    >
+                      Daftar
+                    </Link>
+                  </Text>
+                </Flex>
 
-                {/* Sign In Button */}
                 <Button
                   type="submit"
-                  bg={"blue.400"}
-                  color={"white"}
+                  bg="pink.400"
+                  color="white"
                   _hover={{
-                    bg: "blue.500",
+                    bg: "pink.500",
+                    transform: "translateY(-2px)",
+                    transition: "all 0.2s",
                   }}
-                  w={"40%"}
-                  alignSelf={"end"}
-                  isLoading={isLoading} // Show loading spinner
+                  size="lg"
+                  fontSize="md"
+                  isLoading={isLoading}
+                  borderRadius="lg"
+                  w="full"
                 >
                   Masuk
                 </Button>
               </Stack>
-
-              {/* Google Sign-In Button */}
-              <Button
-                w={"full"}
-                maxW={"md"}
-                variant={"outline"}
-                leftIcon={<FcGoogle />}
-                onClick={handleGoogleSignIn}
-                isLoading={isLoading}
-              >
-                <Center>
-                  <Text>Teruskan dengan Google</Text>
-                </Center>
-              </Button>
             </Stack>
           </form>
+
+          <Flex align="center" my={6}>
+            <Divider flex={1} />
+            <Text px={4} color="gray.500">
+              atau
+            </Text>
+            <Divider flex={1} />
+          </Flex>
+
+          <Button
+            w={"full"}
+            maxW={"md"}
+            variant={"outline"}
+            leftIcon={<FcGoogle />}
+            onClick={handleGoogleSignIn}
+            isLoading={isLoading}
+            mb={6}
+            height="12"
+            fontSize="md"
+            borderRadius="lg"
+            borderWidth={2}
+            _hover={{
+              bg: "gray.50",
+              transform: "translateY(-2px)",
+              transition: "all 0.2s",
+            }}
+          >
+            <Center>
+              <Text>Lanjutkan dengan Google</Text>
+            </Center>
+          </Button>
         </Box>
       </Stack>
     </Flex>

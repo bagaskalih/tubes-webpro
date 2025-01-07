@@ -30,7 +30,7 @@ export default async function AdminDashboard() {
             colorScheme="green"
             width="fit-content"
           >
-            Buat Post Baru
+            Publish Artikel Baru
           </Button>
         </Stack>
       </Stack>

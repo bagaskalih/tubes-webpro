@@ -7,7 +7,7 @@ export interface User {
     | "NUTRISI_ANAK"
     | "PSIKOLOGI_ANAK"
     | "PARENTING"
-    | "PERKEMBANGAN_ANAK"
+    | "PERTUMBUHAN_ANAK"
     | "EDUKASI_ANAK";
   about?: string;
   image?: string;

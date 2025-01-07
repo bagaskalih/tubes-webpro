@@ -47,6 +47,7 @@ export async function GET() {
           select: {
             name: true,
             role: true,
+            specialty: true,
           },
         },
         _count: {

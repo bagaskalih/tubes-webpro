@@ -34,7 +34,7 @@ enum ExpertSpecialty {
   NUTRISI_ANAK = "NUTRISI_ANAK",
   PSIKOLOGI_ANAK = "PSIKOLOGI_ANAK",
   PARENTING = "PARENTING",
-  PERKEMBANGAN_ANAK = "PERKEMBANGAN_ANAK",
+  PERTUMBUHAN_ANAK = "PERTUMBUHAN_ANAK",
   EDUKASI_ANAK = "EDUKASI_ANAK",
 }
 
@@ -42,7 +42,7 @@ const specialtyLabels: Record<ExpertSpecialty, string> = {
   NUTRISI_ANAK: "Nutrisi Anak",
   PSIKOLOGI_ANAK: "Psikologi Anak",
   PARENTING: "Parenting",
-  PERKEMBANGAN_ANAK: "Perkembangan Anak",
+  PERTUMBUHAN_ANAK: "Pertumbuhan Anak",
   EDUKASI_ANAK: "Pendidikan Anak",
 };
 

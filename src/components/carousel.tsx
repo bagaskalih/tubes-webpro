@@ -2,58 +2,50 @@
 import React, { useState } from "react";
 import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
+import { useEffect } from "react";
 
-const cards = [
-  {
-    id: 1,
-    title: "Card 1",
-    description: "This is the first card",
-    imgUrl: "https://picsum.photos/seed/1/200/300",
-  },
-  {
-    id: 2,
-    title: "Card 2",
-    description: "This is the second card",
-    imgUrl: "https://picsum.photos/seed/2/200/300",
-  },
-  {
-    id: 3,
-    title: "Card 3",
-    description: "This is the third card",
-    imgUrl: "https://picsum.photos/seed/3/200/300",
-  },
-  {
-    id: 4,
-    title: "Card 4",
-    description: "This is the fourth card",
-    imgUrl: "https://picsum.photos/seed/4/200/300",
-  },
-  {
-    id: 5,
-    title: "Card 5",
-    description: "This is the fifth card",
-    imgUrl: "https://picsum.photos/seed/5/200/300",
-  },
-  {
-    id: 6,
-    title: "Card 6",
-    description: "This is the sixth card",
-    imgUrl: "https://picsum.photos/seed/6/200/300",
-  },
-  {
-    id: 7,
-    title: "Card 7",
-    description: "This is the seventh card",
-    imgUrl: "https://picsum.photos/seed/7/200/300",
-  },
-];
+enum ExpertSpecialty {
+  NUTRISI_ANAK,
+  PSIKOLOGI_ANAK,
+  PARENTING,
+  PERTUMBUHAN_ANAK,
+  EDUKASI_ANAK,
+}
+
+interface Author {
+  name: string;
+  role: string;
+  specialty?: ExpertSpecialty;
+}
+
+interface Artikel {
+  id: number;
+  title: string;
+  content: string;
+  image?: string;
+  author: Author;
+  createdAt: string;
+  _count: {
+    comments: number;
+  };
+}
 
 export default function CardCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [artikels, setArtikel] = useState<Artikel[]>([]);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      const response = await fetch("/api/posts");
+      const data = await response.json();
+      setArtikel(data);
+    };
+    fetchPosts();
+  }, []);
 
   const nextSlide = () => {
     setCurrentIndex((prevIndex) =>
-      prevIndex === cards.length - 4 ? 0 : prevIndex + 1
+      prevIndex === artikels.length - 4 ? 0 : prevIndex + 1
     );
   };
 
@@ -71,9 +63,9 @@ export default function CardCarousel() {
           mx="auto"
           w={{ base: "100%", lg: "100%" }}
         >
-          {cards.map((card) => (
+          {artikels.map((artikel) => (
             <Box
-              key={card.id}
+              key={artikel.id}
               minW={{ base: "100%", lg: "24%" }}
               maxW={{ base: "100%", lg: "24%" }}
               minH="150px"
@@ -82,24 +74,25 @@ export default function CardCarousel() {
               borderRadius="lg"
               mr={{ base: 0, lg: 3 }}
               mb={{ base: 4, lg: 0 }}
-              bgImage={`url(${card.imgUrl})`}
+              bgImage={`url(${artikel.image})`}
               bgSize="cover"
             >
-              <Link href={`/card/${card.id}`}>
-                <Text fontSize="xl" fontWeight="bold" color={"white"}>
-                  {card.title}
+              <Link href={`/artikel/${artikel.id}`}>
+                <Text fontSize="xl" fontWeight="bold" color={"black"}>
+                  {artikel.title}
                 </Text>
-                <Text color={"white"}>{card.description}</Text>
               </Link>
             </Box>
           ))}
         </Flex>
       </Flex>
-      <Flex justify="flex-end" mt={2}>
-        <Button onClick={nextSlide} colorScheme="blue">
-          Next
-        </Button>
-      </Flex>
+      {artikels.length > 4 && (
+        <Flex justify="flex-end" mt={2}>
+          <Button onClick={nextSlide} colorScheme="blue">
+            Next
+          </Button>
+        </Flex>
+      )}
     </Box>
   );
 }

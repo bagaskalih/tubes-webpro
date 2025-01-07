@@ -22,7 +22,32 @@ import { id } from "date-fns/locale";
 interface Author {
   name: string;
   role: string;
+  specialty?: ExpertSpecialty;
 }
+
+enum ExpertSpecialty {
+  NUTRISI_ANAK,
+  PSIKOLOGI_ANAK,
+  PARENTING,
+  PERTUMBUHAN_ANAK,
+  EDUKASI_ANAK,
+}
+
+enum ExpertSpecialtyType {
+  NUTRISI_ANAK = "NUTRISI_ANAK",
+  PSIKOLOGI_ANAK = "PSIKOLOGI_ANAK",
+  PARENTING = "PARENTING",
+  PERTUMBUHAN_ANAK = "PERTUMBUHAN_ANAK",
+  EDUKASI_ANAK = "EDUKASI_ANAK",
+}
+
+const expertSpecialtyLabel: Record<ExpertSpecialtyType, string> = {
+  NUTRISI_ANAK: "Nutrisi Anak",
+  PSIKOLOGI_ANAK: "Psikologi Anak",
+  PARENTING: "Parenting",
+  PERTUMBUHAN_ANAK: "Pertumbuhan Anak",
+  EDUKASI_ANAK: "Pendidikan Anak",
+};
 
 interface Comment {
   id: number;
@@ -187,7 +212,13 @@ function NewsDetailContent({ postId }: { postId: string }) {
                   <Stack direction="row" align="center" spacing={2}>
                     <Text fontWeight={600}>{comment.author.name}</Text>
                     <Text fontSize="sm" color="gray.500">
-                      {comment.author.role.toLowerCase()}
+                      {comment.author.specialty
+                        ? "Ahli " +
+                          expertSpecialtyLabel[
+                            post.author
+                              .specialty as unknown as ExpertSpecialtyType
+                          ]
+                        : "Pengguna"}
                     </Text>
                   </Stack>
                   <Text>{comment.content}</Text>

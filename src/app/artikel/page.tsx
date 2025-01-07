@@ -14,9 +14,34 @@ import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
 
+enum ExpertSpecialty {
+  NUTRISI_ANAK,
+  PSIKOLOGI_ANAK,
+  PARENTING,
+  PERTUMBUHAN_ANAK,
+  EDUKASI_ANAK,
+}
+
+enum ExpertSpecialtyType {
+  NUTRISI_ANAK = "NUTRISI_ANAK",
+  PSIKOLOGI_ANAK = "PSIKOLOGI_ANAK",
+  PARENTING = "PARENTING",
+  PERTUMBUHAN_ANAK = "PERTUMBUHAN_ANAK",
+  EDUKASI_ANAK = "EDUKASI_ANAK",
+}
+
+const expertSpecialtyLabel: Record<ExpertSpecialtyType, string> = {
+  NUTRISI_ANAK: "Nutrisi Anak",
+  PSIKOLOGI_ANAK: "Psikologi Anak",
+  PARENTING: "Parenting",
+  PERTUMBUHAN_ANAK: "Pertumbuhan Anak",
+  EDUKASI_ANAK: "Pendidikan Anak",
+};
+
 interface Author {
   name: string;
   role: string;
+  specialty?: ExpertSpecialty;
 }
 
 interface Post {
@@ -47,12 +72,14 @@ export default function NewsList() {
     <Container maxW="container.lg" py={8}>
       <Stack spacing={8}>
         {posts.map((post) => (
-          <Link key={post.id} href={`/news/${post.id}`}>
+          <Link key={post.id} href={`/artikel/${post.id}`}>
             <Box
               p={5}
               cursor="pointer"
               _hover={{ shadow: "md" }}
               borderRadius="lg"
+              borderWidth="2px"
+              background={"whitesmoke"}
             >
               <Stack direction="row" spacing={4} height="200px">
                 <Stack flex={1} spacing={2}>
@@ -63,7 +90,15 @@ export default function NewsList() {
                   <Stack direction="row" spacing={4} align="center" mt="auto">
                     <Avatar size="sm" />
                     <Stack direction="column" spacing={0} fontSize="sm">
-                      <Text fontWeight={600}>{post.author.name}</Text>
+                      <Text fontWeight={600}>
+                        {post.author.name} {" · Ahli "}
+                        {post.author.specialty
+                          ? expertSpecialtyLabel[
+                              post.author
+                                .specialty as unknown as ExpertSpecialtyType
+                            ]
+                          : post.author.role}
+                      </Text>
                       <Text color="gray.500">
                         {formatDistanceToNow(new Date(post.createdAt), {
                           addSuffix: true,
@@ -78,7 +113,7 @@ export default function NewsList() {
                 {post.image && (
                   <Image
                     src={post.image}
-                    alt={post.title}
+                    alt={post.title + " image"}
                     width="200px"
                     height="200px"
                     objectFit="cover"

@@ -17,6 +17,7 @@ import {
 } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -86,19 +87,19 @@ export default function CreatePost() {
 
       if (response.ok) {
         toast({
-          title: "Berhasil membuat post",
+          title: "Berhasil membuat Artikel",
           status: "success",
           duration: 3000,
           isClosable: true,
         });
-        router.push("/news");
+        router.push("/artikel");
       } else {
-        throw new Error("Failed to create post");
+        throw new Error("Failed to create Artkiasdasd");
       }
     } catch (error) {
-      console.error("Failed to create post:", error);
+      console.error("Failed to create Artikel:", error);
       toast({
-        title: "Gagal membuat post",
+        title: "Gagal membuat Artikel",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -132,7 +133,7 @@ export default function CreatePost() {
               <Textarea
                 {...register("content")}
                 minHeight="400px"
-                placeholder="Tulis konten post di sini..."
+                placeholder="Tulis konten artikel di sini..."
               />
               <FormErrorMessage>{errors.content?.message}</FormErrorMessage>
             </FormControl>

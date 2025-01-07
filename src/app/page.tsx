@@ -1,5 +1,4 @@
 import { title, subtitle } from "@/components/primitives";
-import { SearchBar } from "@/components/search-bar";
 import Carousel from "@/components/carousel";
 
 export default function Home() {
@@ -12,10 +11,6 @@ export default function Home() {
         <div className={subtitle({ class: "mt-4" })}>
           Solusi Modern untuk Orang Tua Cerdas.
         </div>
-      </div>
-
-      <div className="flex w-3/6">
-        <SearchBar />
       </div>
 
       {/* carousel */}

@@ -9,14 +9,12 @@ import {
   Avatar,
   Image,
   SimpleGrid,
-  useColorModeValue,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
 import { subtitle } from "@/components/primitives";
-import { title } from "process";
 
 enum ExpertSpecialty {
   NUTRISI_ANAK,
@@ -62,7 +60,6 @@ interface Post {
 }
 export default function NewsList() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -72,8 +69,6 @@ export default function NewsList() {
         setPosts(data);
       } catch (error) {
         console.error("Error fetching posts:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
     fetchPosts();

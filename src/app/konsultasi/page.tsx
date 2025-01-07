@@ -6,7 +6,6 @@ import {
   Heading,
   Stack,
   Text,
-  useColorModeValue,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -28,7 +27,6 @@ import { FaStar, FaRegStar } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { subtitle } from "@/components/primitives";
-import { title } from "process";
 
 interface Expert {
   id: number;

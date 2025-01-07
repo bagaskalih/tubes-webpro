@@ -54,16 +54,17 @@ export async function GET(
 
 export async function PUT(
   req: Request,
-  { params }: { params: { postId: string } }
+  { params }: { params: Promise<{ postId: string }> }
 ) {
   try {
+    const { postId } = await params;
     const session = await getServerSession(authOptions);
     if (!session || !["ADMIN", "EXPERT"].includes(session.user?.role)) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
     const { title, content, image } = await req.json();
-    const id = parseInt(params.postId);
+    const id = parseInt(postId);
 
     const post = await db.post.update({
       where: { id },
@@ -86,15 +87,16 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { postId: string } }
+  { params }: { params: Promise<{ postId: string }> }
 ) {
   try {
+    const { postId } = await params;
     const session = await getServerSession(authOptions);
     if (!session || !["ADMIN", "EXPERT"].includes(session.user?.role)) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    const id = parseInt(params.postId);
+    const id = parseInt(postId);
     await db.post.delete({
       where: { id },
     });

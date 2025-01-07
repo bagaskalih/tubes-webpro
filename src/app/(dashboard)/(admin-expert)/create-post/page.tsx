@@ -42,7 +42,6 @@ import { useState, useEffect, useRef } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ExpertSpecialty } from "@prisma/client";
 
 const postSchema = z.object({
   title: z.string().nonempty("Judul tidak boleh kosong"),

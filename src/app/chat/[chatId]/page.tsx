@@ -1,25 +1,12 @@
 "use client";
 
 import {
-  Box,
-  Flex,
   Input,
-  IconButton,
-  Text,
-  VStack,
-  HStack,
-  useColorModeValue,
   Avatar,
   Button,
   useToast,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
   useDisclosure,
-  Textarea,
 } from "@chakra-ui/react";
 import { useEffect, useState, useRef, use } from "react";
 import { useSession } from "next-auth/react";
@@ -73,9 +60,6 @@ function ChatRoomContent({ chatId }: { chatId: string }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [rating, setRating] = useState(0);
   const [review, setReview] = useState("");
-
-  const bg = useColorModeValue("white", "gray.800");
-  const borderColor = useColorModeValue("gray.200", "gray.600");
 
   useEffect(() => {
     if (!session) {

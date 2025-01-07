@@ -1,19 +1,6 @@
 "use client";
 
-import {
-  Box,
-  Container,
-  Heading,
-  Text,
-  Stack,
-  Avatar,
-  useColorModeValue,
-  Image,
-  Divider,
-  Button,
-  Textarea,
-  useToast,
-} from "@chakra-ui/react";
+import { Avatar, Image, Button, Textarea, useToast } from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState, use } from "react";
 import { formatDistanceToNow } from "date-fns";

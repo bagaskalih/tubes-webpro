@@ -259,19 +259,6 @@ export default function CreateUserForm() {
                         {errors.about?.message}
                       </FormErrorMessage>
                     </FormControl>
-
-                    <FormControl isInvalid={!!errors.image}>
-                      <FormLabel>URL Foto Profil</FormLabel>
-                      <Input
-                        {...register("image")}
-                        focusBorderColor="pink.500"
-                        _hover={{ borderColor: "gray.300" }}
-                        placeholder="Masukkan URL foto profil"
-                      />
-                      <FormErrorMessage>
-                        {errors.image?.message}
-                      </FormErrorMessage>
-                    </FormControl>
                   </Stack>
                 )}
 

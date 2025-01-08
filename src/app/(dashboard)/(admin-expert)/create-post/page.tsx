@@ -28,25 +28,30 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
+  Icon,
+  VStack,
+  Text,
+  Image,
 } from "@chakra-ui/react";
+import { FiUpload } from "react-icons/fi";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createClient } from "@supabase/supabase-js";
+import { EditPostModal } from "@/components/EditPostModal";
+
+const supabase = createClient(
+  "https://ayvqagtjtkhriqwynupc.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF5dnFhZ3RqdGtocmlxd3ludXBjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQxMTk3NjUsImV4cCI6MjA0OTY5NTc2NX0.aDbCCeWvxbQtHxDv9FbZaj7pyQL0wZ017aoBKcRBYLc"
+);
 
 const postSchema = z.object({
   title: z.string().nonempty("Judul tidak boleh kosong"),
   content: z.string().nonempty("Konten tidak boleh kosong"),
-  image: z.string().optional(),
+  image: z.any().optional(), // Changed to accept File object
 });
 
 type PostFormData = z.infer<typeof postSchema>;
@@ -60,9 +65,13 @@ interface User {
 interface Post {
   id: string;
   title: string;
-  author: User;
   content: string;
   image: string;
+  author: User;
+  authorId: number;
+  comments: any[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export default function CreatePost() {
@@ -71,84 +80,81 @@ export default function CreatePost() {
   const toast = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
-
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const {
     isOpen: isEditOpen,
     onOpen: onEditOpen,
     onClose: onEditClose,
   } = useDisclosure();
+
   const {
     isOpen: isDeleteOpen,
     onOpen: onDeleteOpen,
     onClose: onDeleteClose,
   } = useDisclosure();
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+
   const cancelRef = useRef<HTMLButtonElement>(null!);
 
-  const {
-    register: editRegister,
-    handleSubmit: handleEditSubmit,
-    formState: { errors: editErrors },
-    reset: resetEditForm,
-    setValue,
-  } = useForm<PostFormData>({
+  const handleImageUpload = async (file: File): Promise<string> => {
+    if (file.size > 5 * 1024 * 1024) {
+      throw new Error("Ukuran maksimal file adalah 5MB");
+    }
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      throw new Error("Gunakan format JPG, PNG, atau WebP");
+    }
+
+    const fileExt = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random()
+      .toString(36)
+      .substring(2)}.${fileExt}`;
+
+    const { error: uploadError, data } = await supabase.storage
+      .from("artikel-images")
+      .upload(fileName, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (uploadError) throw new Error("Gagal mengunggah file");
+    if (!data) throw new Error("Tidak ada data yang diterima dari server");
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("artikel-images").getPublicUrl(fileName);
+
+    return publicUrl;
+  };
+
+  const { setValue } = useForm<PostFormData>({
     resolver: zodResolver(postSchema),
   });
 
   const handleEdit = (post: Post) => {
     setSelectedPost(post);
-    setValue("title", post.title);
-    setValue("content", post.content);
-    setValue("image", post.image);
     onEditOpen();
+  };
+
+  const handlePostUpdate = () => {
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch("/api/posts");
+        const data = await response.json();
+        // sort posts by id in ascending order
+        data.sort((a: Post, b: Post) => parseInt(a.id) - parseInt(b.id));
+        setPosts(data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+    fetchPosts();
   };
 
   const handleDelete = (post: Post) => {
     setSelectedPost(post);
     onDeleteOpen();
-  };
-
-  const onEditSubmit = async (data: PostFormData) => {
-    if (!selectedPost) return;
-
-    try {
-      setIsSubmitting(true);
-      const response = await fetch(`/api/posts/${selectedPost.id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (response.ok) {
-        toast({
-          title: "Artikel berhasil diperbarui",
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
-        // Refresh posts list
-        const updatedPosts = posts.map((post) =>
-          post.id === selectedPost.id ? { ...post, ...data } : post
-        );
-        setPosts(updatedPosts);
-        onEditClose();
-        resetEditForm();
-      } else {
-        throw new Error("Failed to update artikel");
-      }
-    } catch (error) {
-      console.error("Failed to update Artikel:", error);
-      toast({
-        title: "Gagal memperbarui Artikel",
-        status: "error",
-        duration: 3000,
-        isClosable: true,
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const onConfirmDelete = async () => {
@@ -242,12 +248,21 @@ export default function CreatePost() {
   const onSubmit = async (data: PostFormData) => {
     try {
       setIsSubmitting(true);
+
+      let imageUrl = "";
+      if (data.image instanceof File) {
+        imageUrl = await handleImageUpload(data.image);
+      }
+
       const response = await fetch("/api/posts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          image: imageUrl,
+        }),
       });
 
       if (response.ok) {
@@ -265,69 +280,79 @@ export default function CreatePost() {
       console.error("Failed to create Artikel:", error);
       toast({
         title: "Gagal membuat Artikel",
+        description:
+          error instanceof Error ? error.message : "Terjadi kesalahan",
         status: "error",
         duration: 3000,
-        isClosable: true,
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const EditModal = () => (
-    <Modal isOpen={isEditOpen} onClose={onEditClose} size="xl">
-      <ModalOverlay />
-      <ModalContent>
-        <ModalHeader>Edit Artikel</ModalHeader>
-        <ModalCloseButton />
-        <form onSubmit={handleEditSubmit(onEditSubmit)}>
-          <ModalBody>
-            <Stack spacing={4}>
-              <FormControl isInvalid={!!editErrors.title}>
-                <FormLabel>Judul</FormLabel>
-                <Input
-                  {...editRegister("title")}
-                  focusBorderColor="pink.500"
-                  _hover={{ borderColor: "gray.300" }}
-                />
-                <FormErrorMessage>{editErrors.title?.message}</FormErrorMessage>
-              </FormControl>
-
-              <FormControl isInvalid={!!editErrors.image}>
-                <FormLabel>URL Gambar (opsional)</FormLabel>
-                <Input
-                  {...editRegister("image")}
-                  focusBorderColor="pink.500"
-                  _hover={{ borderColor: "gray.300" }}
-                />
-                <FormErrorMessage>{editErrors.image?.message}</FormErrorMessage>
-              </FormControl>
-
-              <FormControl isInvalid={!!editErrors.content}>
-                <FormLabel>Konten</FormLabel>
-                <Textarea
-                  {...editRegister("content")}
-                  minH="300px"
-                  focusBorderColor="pink.500"
-                  _hover={{ borderColor: "gray.300" }}
-                />
-                <FormErrorMessage>
-                  {editErrors.content?.message}
-                </FormErrorMessage>
-              </FormControl>
-            </Stack>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant="ghost" mr={3} onClick={onEditClose}>
-              Batal
+  const ImageUploadControl = () => (
+    <FormControl isInvalid={!!errors.image}>
+      <FormLabel>Gambar Artikel</FormLabel>
+      <Input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) {
+            setValue("image", file);
+            // Create preview URL
+            const previewUrl = URL.createObjectURL(file);
+            setImagePreview(previewUrl);
+          }
+        }}
+        hidden
+        ref={fileInputRef}
+      />
+      <Box
+        border="2px dashed"
+        borderColor="gray.200"
+        borderRadius="xl"
+        p={4}
+        textAlign="center"
+        cursor="pointer"
+        onClick={() => fileInputRef.current?.click()}
+        _hover={{ borderColor: "pink.500" }}
+      >
+        {imagePreview ? (
+          <VStack spacing={4}>
+            <Image
+              src={imagePreview}
+              alt="Preview"
+              maxH="200px"
+              objectFit="contain"
+            />
+            <Button
+              size="sm"
+              colorScheme="pink"
+              onClick={(e) => {
+                e.stopPropagation();
+                setValue("image", undefined);
+                setImagePreview(null);
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = "";
+                }
+              }}
+            >
+              Hapus Gambar
             </Button>
-            <Button type="submit" colorScheme="pink" isLoading={isSubmitting}>
-              Simpan
-            </Button>
-          </ModalFooter>
-        </form>
-      </ModalContent>
-    </Modal>
+          </VStack>
+        ) : (
+          <VStack spacing={2}>
+            <Icon as={FiUpload} w={8} h={8} color="gray.400" />
+            <Text>Klik untuk mengunggah gambar</Text>
+            <Text fontSize="sm" color="gray.500">
+              Format: JPG, PNG, atau WebP (Max 5MB)
+            </Text>
+          </VStack>
+        )}
+      </Box>
+      <FormErrorMessage>{errors.image?.message?.toString()}</FormErrorMessage>
+    </FormControl>
   );
 
   const DeleteAlert = () => (
@@ -408,15 +433,7 @@ export default function CreatePost() {
               <FormErrorMessage>{errors.title?.message}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isInvalid={!!errors.image}>
-              <FormLabel>URL Gambar (opsional)</FormLabel>
-              <Input
-                {...register("image")}
-                focusBorderColor="pink.500"
-                _hover={{ borderColor: "gray.300" }}
-              />
-              <FormErrorMessage>{errors.image?.message}</FormErrorMessage>
-            </FormControl>
+            <ImageUploadControl />
 
             <FormControl isInvalid={!!errors.content}>
               <FormLabel>Konten</FormLabel>
@@ -485,7 +502,12 @@ export default function CreatePost() {
           </Box>
         </Box>
       </Stack>
-      <EditModal />
+      <EditPostModal
+        isOpen={isEditOpen}
+        onClose={onEditClose}
+        post={selectedPost}
+        onPostUpdate={handlePostUpdate}
+      />
       <DeleteAlert />
     </Container>
   );

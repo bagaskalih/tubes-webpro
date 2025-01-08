@@ -1,6 +1,7 @@
 // page.tsx
 import { title, subtitle } from "@/components/primitives";
 import Carousel from "@/components/carousel";
+import { Text } from "@chakra-ui/react";
 
 export default function Home() {
   return (
@@ -26,7 +27,13 @@ export default function Home() {
           Solusi Modern untuk Orang Tua Cerdas.
         </p>
       </div>
-      <Carousel />
+
+      <div className="text-center space-y-6 mb-12 mt-5">
+        <Text fontSize="2xl" fontWeight="bold" color="gray.900">
+          ARTIKEL TERKINI
+        </Text>
+        <Carousel />
+      </div>
     </section>
   );
 }

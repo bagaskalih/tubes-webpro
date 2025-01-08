@@ -69,7 +69,7 @@ interface Post {
   image: string;
   author: User;
   authorId: number;
-  comments: any[];
+  comments: Comment[];
   createdAt: string;
   updatedAt: string;
 }

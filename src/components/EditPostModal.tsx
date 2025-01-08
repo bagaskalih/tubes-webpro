@@ -40,6 +40,13 @@ const editPostSchema = z.object({
 
 type EditPostFormData = z.infer<typeof editPostSchema>;
 
+interface Post {
+  id: string;
+  title: string;
+  content: string;
+  image?: string;
+}
+
 interface EditPostModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -49,7 +56,7 @@ interface EditPostModalProps {
     content: string;
     image?: string;
   } | null;
-  onPostUpdate: (updatedPost: any) => void;
+  onPostUpdate: (updatedPost: Post) => void;
 }
 
 export function EditPostModal({

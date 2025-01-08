@@ -27,7 +27,7 @@ async function main() {
       about: "Spesialis gizi anak dengan pengalaman 10 tahun",
     },
     {
-      email: "budi.psikolog@gmail.com",
+      email: "budi@gmail.com",
       name: "Budi Santoso, M.Psi",
       password: await hash("expert123", 10),
       role: "EXPERT",
@@ -35,7 +35,7 @@ async function main() {
       about: "Psikolog anak berpengalaman dengan fokus pada perkembangan anak",
     },
     {
-      email: "dewi.parenting@gmail.com",
+      email: "dewi@gmail.com",
       name: "Dewi Kusuma",
       password: await hash("expert123", 10),
       role: "EXPERT",
@@ -51,7 +51,7 @@ async function main() {
       about: "Dokter spesialis tumbuh kembang anak",
     },
     {
-      email: "rini.edu@gmail.com",
+      email: "rini@gmail.com",
       name: "Rini Pratiwi, M.Pd",
       password: await hash("expert123", 10),
       role: "EXPERT",

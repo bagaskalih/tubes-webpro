@@ -1,10 +1,24 @@
 "use client";
-
-import { Avatar, Image, Button, Textarea, useToast } from "@chakra-ui/react";
+import React from "react";
+import {
+  Box,
+  Container,
+  VStack,
+  HStack,
+  Text,
+  Avatar,
+  Divider,
+  useColorModeValue,
+  Badge,
+  Textarea,
+  Button,
+  useToast,
+} from "@chakra-ui/react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState, use } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
+import ReactMarkdown from "react-markdown";
 
 interface Author {
   name: string;
@@ -69,6 +83,10 @@ function NewsDetailContent({ postId }: { postId: string }) {
   const { data: session } = useSession();
   const toast = useToast();
 
+  const bgColor = useColorModeValue("white", "gray.800");
+  const borderColor = useColorModeValue("gray.200", "gray.700");
+  const textColor = useColorModeValue("gray.700", "gray.100");
+
   useEffect(() => {
     if (!postId) return;
     const fetchPost = async () => {
@@ -78,8 +96,6 @@ function NewsDetailContent({ postId }: { postId: string }) {
     };
     fetchPost();
   }, [postId]);
-
-  console.log(post);
 
   const handleCommentSubmit = async () => {
     if (!session) {
@@ -128,88 +144,187 @@ function NewsDetailContent({ postId }: { postId: string }) {
   if (!post) return null;
 
   return (
-    <section className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="space-y-8">
+    <Container maxW="4xl" py={8}>
+      <VStack spacing={8} align="stretch">
+        {/* Hero Image */}
         {post.image && (
-          <div className="relative h-[400px] w-full overflow-hidden rounded-xl">
-            <Image
+          <Box
+            position="relative"
+            height="400px"
+            width="100%"
+            overflow="hidden"
+            borderRadius="xl"
+          >
+            <Box
+              as="img"
               src={post.image}
               alt={post.title}
               objectFit="cover"
               width="100%"
               height="100%"
             />
-          </div>
+          </Box>
         )}
 
-        <div className="space-y-6">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+        {/* Article Header */}
+        <VStack spacing={6} align="stretch">
+          <Text
+            as="h1"
+            fontSize={{ base: "3xl", md: "4xl" }}
+            fontWeight="bold"
+            lineHeight="tight"
+          >
             {post.title}
-          </h1>
+          </Text>
 
-          <div className="flex items-center space-x-4">
+          <HStack spacing={4}>
             <Avatar size="md" src={post.author.image} name={post.author.name} />
-            <div className="space-y-1">
-              <p className="font-semibold text-gray-900">{post.author.name}</p>
-              <p className="text-sm text-gray-500">
+            <VStack align="start" spacing={0}>
+              <Text fontWeight="semibold">{post.author.name}</Text>
+              <Text fontSize="sm" color="gray.500">
                 {formatDistanceToNow(new Date(post.createdAt), {
                   addSuffix: true,
                   locale: id,
                 })}
-              </p>
-            </div>
+              </Text>
+            </VStack>
+          </HStack>
+        </VStack>
+
+        <Box
+          className="article-content"
+          sx={{
+            "& p, & li, & blockquote": {
+              textAlign: "justify !important",
+              textJustify: "inter-word !important",
+            },
+            "& .markdown-content": {
+              "h1, h2, h3, h4, h5, h6": {
+                fontWeight: "bold",
+                lineHeight: "tight",
+                mt: 6,
+                mb: 4,
+              },
+              h1: { fontSize: "4xl" },
+              h2: { fontSize: "3xl" },
+              h3: { fontSize: "2xl" },
+              h4: { fontSize: "xl" },
+              p: {
+                mb: 4,
+                lineHeight: "tall",
+                fontSize: "lg",
+              },
+              "ul, ol": {
+                pl: 6,
+                mb: 4,
+              },
+              li: {
+                mb: 2,
+              },
+              blockquote: {
+                borderLeftWidth: "4px",
+                borderLeftColor: "pink.500",
+                pl: 4,
+                py: 2,
+                my: 4,
+                fontStyle: "italic",
+              },
+              a: {
+                color: "pink.500",
+                textDecoration: "underline",
+                _hover: {
+                  color: "pink.600",
+                },
+              },
+              img: {
+                maxW: "100%",
+                h: "auto",
+                borderRadius: "lg",
+                my: 4,
+              },
+            },
+          }}
+        >
+          <div className="markdown-content">
+            <ReactMarkdown
+              components={{
+                p: ({ children }) => (
+                  <Text
+                    mb={4}
+                    lineHeight="tall"
+                    fontSize="lg"
+                    textAlign="justify"
+                    sx={{
+                      textAlign: "justify",
+                    }}
+                  >
+                    {children}
+                  </Text>
+                ),
+              }}
+            >
+              {post.content}
+            </ReactMarkdown>
           </div>
-        </div>
+        </Box>
 
-        <article className="prose prose-lg max-w-none">{post.content}</article>
+        <Divider my={8} />
 
-        <hr className="border-t border-gray-200 my-12" />
-
-        <div className="space-y-8">
+        {/* Comments Section */}
+        <VStack spacing={6} align="stretch">
           {session ? (
-            <div className="space-y-4">
+            <Box>
               <Textarea
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Tulis komentar..."
-                className="w-full rounded-xl border-gray-200 focus:border-pink-500 focus:ring-pink-500"
+                size="lg"
+                borderRadius="xl"
+                focusBorderColor="pink.500"
+                mb={4}
               />
               <Button
+                colorScheme="pink"
+                borderRadius="full"
+                px={8}
+                float="right"
                 onClick={handleCommentSubmit}
-                className="ml-auto bg-pink-500 hover:bg-pink-600 text-white rounded-full px-6 py-2"
               >
                 Kirim Komentar
               </Button>
-            </div>
+            </Box>
           ) : (
-            <div className="bg-gray-50 rounded-xl p-6">
-              <p className="text-gray-600">
+            <Box bg="gray.50" p={6} borderRadius="xl" textAlign="center">
+              <Text color="gray.600">
                 Silakan masuk terlebih dahulu untuk menambahkan komentar.
-              </p>
-            </div>
+              </Text>
+            </Box>
           )}
 
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              Komentar ({post.comments.length})
-            </h2>
+          <Text fontSize="2xl" fontWeight="bold" mt={8}>
+            Komentar ({post.comments.length})
+          </Text>
+
+          <VStack spacing={4} align="stretch">
             {post.comments.map((comment) => (
-              <div
+              <Box
                 key={comment.id}
-                className="bg-white rounded-xl shadow-sm p-6 space-y-4"
+                p={6}
+                borderRadius="xl"
+                borderWidth="1px"
+                borderColor={borderColor}
+                bg={bgColor}
               >
-                <div className="flex items-center space-x-4">
+                <HStack spacing={4} mb={4}>
                   <Avatar
                     size="sm"
                     src={comment.author.image}
                     name={comment.author.name}
                   />
-                  <div className="space-y-1">
-                    <div className="flex items-center space-x-2">
-                      <p className="font-semibold text-gray-900">
-                        {comment.author.name}
-                      </p>
-                      <span className="text-sm text-pink-500">
+                  <VStack align="start" spacing={0}>
+                    <HStack>
+                      <Text fontWeight="semibold">{comment.author.name}</Text>
+                      <Badge colorScheme="pink">
                         {comment.author.specialty
                           ? "Ahli " +
                             expertSpecialtyLabel[
@@ -217,22 +332,22 @@ function NewsDetailContent({ postId }: { postId: string }) {
                                 .specialty as unknown as ExpertSpecialtyType
                             ]
                           : "Pengguna"}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-500">
+                      </Badge>
+                    </HStack>
+                    <Text fontSize="sm" color="gray.500">
                       {formatDistanceToNow(new Date(comment.createdAt), {
                         addSuffix: true,
                         locale: id,
                       })}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-gray-600">{comment.content}</p>
-              </div>
+                    </Text>
+                  </VStack>
+                </HStack>
+                <Text color={textColor}>{comment.content}</Text>
+              </Box>
             ))}
-          </div>
-        </div>
-      </div>
-    </section>
+          </VStack>
+        </VStack>
+      </VStack>
+    </Container>
   );
 }
